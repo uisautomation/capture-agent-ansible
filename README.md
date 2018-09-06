@@ -12,7 +12,7 @@ remote configured with the user 'galicaster'
 remote user configured with root level key based ssh access
 An ssh key file to access the root account on the remote client
 
-### Out of the Box run ##
+### Out of the Box run ###
 to run on localhost:
 `cp all.example all`
 
@@ -25,6 +25,21 @@ open a terminal session and execute:
 
 using any other type of host group or any of the extra vars may make the run fail
 without the proper configuration and services being available.
+
+### Datapath VisionLC out of the box example ###
+same as above however in hosts file comment out the example host under `[capture-agents-v4l2-split]`
+and uncomment the host under `[capture-agents-dual-datapath-split]`
+
+you must also download the latest datapath visionLC driver from datapath and place it under `capture-agent-ansible/roles/galicaster-capture-agent-datapath-common/files/visiondriver.tar.gz`
+make sure its named `visiondriver.tar.gz`
+
+open a terminal session and execute:
+
+`ansible-playbook capture-agent.yml -i hosts --private-key=~/.ssh/ca-ansible -e force_reboot=true`
+
+this will install the datapath visionLC drivers and configure galicaster to use it.
+there is an optional force reboot to make sure the driver setting stick
+
 
 ### Examples ###
 all hosts:
