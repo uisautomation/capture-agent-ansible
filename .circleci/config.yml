@@ -1,0 +1,29 @@
+version: 2
+
+jobs:
+  sync_upstream:
+    docker:
+      - image: circleci/python:3.6.1
+
+    steps:
+      - checkout
+      - run:
+          command: |
+            git config --global user.email "$GH_EMAIL" > /dev/null 2>&1
+            git config --global user.name "$GH_NAME" > /dev/null 2>&1
+            git remote add UoM https://github.com/UoM-Podcast/capture-agent-ansible.git
+            git fetch UoM
+            git push origin UoM/master:upstream
+
+workflows:
+  version: 2
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only: 
+                - master
+    jobs:
+      - sync_upstream
