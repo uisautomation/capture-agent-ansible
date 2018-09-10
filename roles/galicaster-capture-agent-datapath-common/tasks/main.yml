@@ -1,24 +1,49 @@
 ## galicaster-capture-agents-datapath-common/tasks
 ---
 
-- name: "Remove Datapath Drivers"
-  apt: >
-          pkg=datapath-vision-drivers
-          state=absent
-          force=yes
-  register: datapath_driver_removed
+# - name: "Remove Datapath Drivers"
+#   apt: >
+#           pkg=datapath-vision-drivers
+#           state=absent
+#           force=yes
+#   register: datapath_driver_removed
+#   tags:
+#           - datapath
+#           - datapath_drivers
+
+# create a datapath install dir
+- name: create a datapath install dir
+  file:
+    path: /opt/datapath
+    state: directory
+  tags:
+          - datapath
+          - datapath_drivers
+
+# untar to the datapath install dir
+- name: Extract datapath drivers
+  unarchive:
+    src: visiondriver.tar.gz
+    dest: /opt/datapath
   tags:
           - datapath
           - datapath_drivers
 
 - name: "Install Datapath Drivers"
-  apt: >
-          pkg=datapath-vision-drivers
-          state=latest
-          force=yes
-  when: datapath_driver_removed
+  command: ./scripts/install.sh -s
+  args:
+    chdir: /opt/datapath
   register: datapath_driver_installed
   changed_when: datapath_driver_installed.stdout is defined and datapath_driver_installed.stdout | search("Flash requires upgrading, please wait")
+  tags:
+          - datapath
+          - datapath_drivers
+
+- name: "expose both visionLC inputs"
+  lineinfile: >
+          dest=/etc/modprobe.d/rgb200.sample.conf
+          regexp="^# options rgb200 rgb133_expose_inputs=<enable>"
+          line="options rgb200 rgb133_expose_inputs=1"
   tags:
           - datapath
           - datapath_drivers

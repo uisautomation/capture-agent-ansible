@@ -81,3 +81,29 @@
     port={{ ansible_ssh_port }}
     delay=90
     timeout=800
+
+- name: Forced host reboot
+  shell: sleep 2 && shutdown -r now "Reboot triggered by Ansible"
+  async: 1
+  poll: 0
+  ignore_errors: true
+  when: force_reboot|default(false)
+  tags:
+          - kernel
+          - apt
+          - apt_update
+          - datapath
+
+- name: Short Wait after forced host reboot
+  when: force_reboot|default(false)
+  local_action: >
+    wait_for
+    host={{ ansible_ssh_host }}
+    port={{ ansible_ssh_port }}
+    delay=90
+    timeout=800
+  tags:
+          - kernel
+          - apt
+          - apt_update
+          - datapath
