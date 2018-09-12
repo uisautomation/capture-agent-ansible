@@ -1,3 +1,3 @@
 Host *
     StrictHostKeyChecking no
-IdentityFile ~/.ssh/id_rsa.gc-log
+#IdentityFile ~/.ssh/id_rsa.gc-log
