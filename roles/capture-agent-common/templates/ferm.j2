@@ -14,25 +14,32 @@ table filter {
         ####### Galicaster Capture Agent rules
 
         # HTTPS
-        saddr (10.2.147.0/24 130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport https ACCEPT;
+        #saddr (10.2.147.0/24 130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport https ACCEPT;
+        saddr (131.111.0.0/16 172.28.0.0/16 10.248.0.0/16) proto tcp dport https ACCEPT;
 
         # HTTP
-        saddr (10.2.147.0/24 130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport http ACCEPT;
+        #saddr (10.2.147.0/24 130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport http ACCEPT;
+        saddr (131.111.0.0/16 172.28.0.0/16 10.248.0.0/16) proto tcp dport http ACCEPT;
 
         # SSH
-        saddr (130.88.0.0/16 10.99.0.0/16 10.2.147.0/24 10.186.0.0/16 192.168.0.0/16) proto tcp dport ssh ACCEPT;
+        #saddr (130.88.0.0/16 10.99.0.0/16 10.2.147.0/24 10.186.0.0/16 192.168.0.0/16) proto tcp dport ssh ACCEPT;
+        saddr (131.111.0.0/16 172.28.0.0/16 10.248.0.0/16) proto tcp dport ssh ACCEPT;
 
         # VNC
-        saddr (130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport 5800 ACCEPT;
-        saddr (130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport 5900 ACCEPT;
+        #saddr (130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport 5800 ACCEPT;
+        #saddr (130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport 5900 ACCEPT;
+        saddr (131.111.0.0/16 172.28.0.0/16 10.248.0.0/16) proto tcp dport 5800 ACCEPT;
+        saddr (131.111.0.0/16 172.28.0.0/16 10.248.0.0/16) proto tcp dport 5900 ACCEPT;
 
         # PEAKABOO
-        saddr (130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport 31337 ACCEPT;
-        saddr (130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport 3000 ACCEPT;
+        #saddr (130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport 31337 ACCEPT;
+        #saddr (130.88.0.0/16 10.99.0.0/16 10.186.0.0/16) proto tcp dport 3000 ACCEPT;
+        saddr (131.111.0.0/16 172.28.0.0/16 10.248.0.0/16) proto tcp dport 31337 ACCEPT;
+        saddr (131.111.0.0/16 172.28.0.0/16 10.248.0.0/16) proto tcp dport 3000 ACCEPT;
 
         # Nagios
-        saddr 130.88.203.240/32 proto tcp dport 5666 ACCEPT;
-        saddr 130.88.203.130/32 proto tcp dport 5666 ACCEPT;
+        #saddr 130.88.203.240/32 proto tcp dport 5666 ACCEPT;
+        #saddr 130.88.203.130/32 proto tcp dport 5666 ACCEPT;
 
         # REJECT
         REJECT reject-with icmp-host-prohibited;
