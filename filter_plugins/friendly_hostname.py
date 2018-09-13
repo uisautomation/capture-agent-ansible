@@ -37,7 +37,7 @@ def generate_friendly_hostname(s):
     'fervent-einstein-793'
 
     """
-    digest = hashlib.sha256(s).hexdigest()
+    digest = hashlib.sha256(s.encode('utf8')).hexdigest()
 
     # Sampling from a non power of 2 list of choices is a problem which is
     # subtle and quick to anger. In this case we map the digest into a flow in
