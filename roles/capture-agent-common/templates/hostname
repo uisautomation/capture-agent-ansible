@@ -1,2 +1,2 @@
-{{ hostvars[inventory_hostname].ansible_default_ipv4.macaddress | friendly_hostname }}
+{{ ca_hostname }}
 
