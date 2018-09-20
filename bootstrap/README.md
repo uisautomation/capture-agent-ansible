@@ -1,27 +1,35 @@
 # Lecture Capture Agent Bootstrap
 
-## How to create a custom ISO image which can be used to install a Lecture Capture Agent
+This directory contains a Docker-ised script to build a custom Ubuntu image for
+a Lecture Capture Agent.
 
-Download a copy of the linux distribution ISO image (currently Ubuntu 16.04.5), add it to the directory that holds these files.
+## Short version
 
-### Build the docker image:
+```bash
+$ docker run --privileged --rm -v $PWD/images:/images $(docker build -q .)
+```
 
-`docker build -t lc-iso-ubuntu .`
+After some time a new lecture capture agent image is available at
+``images/lc-agent.iso``.
 
-### Run the docker container (needs to be privileged to do the loopback mount):
+## Changing base Ubuntu version
 
-`docker run -t -i --privileged lc-iso-ubuntu bash`
+The ``BASE_IMAGE_URL`` build argument can be used to specify a different base
+image to download when building the image. E.g. to use the lubuntu:
 
-### Build the ISO image:
+```bash
+$ docker build -t lc-lubuntu \
+  --build-arg BASE_IMAGE_URL=http://www.mirrorservice.org/sites/cdimage.ubuntu.com/cdimage/lubuntu/releases/16.04.5/release/lubuntu-16.04-desktop-amd64.iso \
+  .
+$ docker run --privileged --rm -v $PWD/images:/images \
+  -e IMAGE_NAME=lc-agent-lubuntu lc-lubuntu
+```
 
-`cd /tmp`
+A lubuntu flavoured image is then available at ``images/lc-agent-lubuntu.iso``.
 
-`./build-lc-iso.sh`
+## Changing image name
 
-### Copy the ISO amge out of the container to the docker host:
-
-On the docker host
-
-`docker cp <container>:/tmp/lc.iso .`
-
-This can then be flashed to a USB stick, with dd or on mac OSX I use etcher.
+By default, the script writes the output image to ``/images/lc-agent.iso``. The
+basename of this file is configurable via the ``IMAGE_NAME`` environment
+variable. So, with ``IMAGE_NAME=my-image``, the script writes the image to
+``/images/my-image.iso``.
