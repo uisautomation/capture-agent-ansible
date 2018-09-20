@@ -14,8 +14,8 @@ Download a copy of the linux distribution ISO image (currently Ubuntu 16.04.5), 
 
 ### Build the ISO image:
 
-`cd /tmp
-./build-lc-iso.sh`
+`cd /tmp`
+`./build-lc-iso.sh`
 
 ### Copy the ISO amge out of the container to the docker host:
 
