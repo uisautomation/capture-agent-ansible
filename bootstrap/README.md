@@ -20,6 +20,8 @@ Download a copy of the linux distribution ISO image (currently Ubuntu 16.04.5), 
 
 ### Copy the ISO amge out of the container to the docker host:
 
+On the docker host
+
 `docker cp <container>:/tmp/lc.iso .`
 
 This can then be flashed to a USB stick, with dd or on mac OSX I use etcher.
