@@ -10,18 +10,8 @@ Download a copy of the linux distribution ISO image (currently Ubuntu 16.04.5), 
 
 ### Run the docker container (needs to be privileged to do the loopback mount):
 
-```docker run -t -i --privileged lc-iso-ubuntu bash```
+```docker run -t -i --privileged -v $(pwd)/iso:/tmp/iso lc-iso-ubuntu bash```
 
-### Build the ISO image:
-
-```cd /tmp```
-
-```./build-lc-iso.sh```
-
-### Copy the ISO amge out of the container to the docker host:
-
-On the docker host
-
-```docker cp <container>:/tmp/lc.iso .```
+There should now be an ISO image lc.iso in the iso directory
 
 This can then be flashed to a USB stick, with dd or on mac OSX I use etcher.
