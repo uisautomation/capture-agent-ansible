@@ -15,7 +15,8 @@ After some time a new lecture capture agent image is available at
 ## Changing base Ubuntu version
 
 The ``BASE_IMAGE_URL`` build argument can be used to specify a different base
-image to download when building the image. E.g. to use the lubuntu:
+image to download when building the image. E.g. to use the lubuntu flavour of
+Ubuntu:
 
 ```bash
 $ docker build -t lc-lubuntu \
