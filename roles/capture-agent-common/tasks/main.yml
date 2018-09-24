@@ -26,18 +26,6 @@
 
 # apt proxy handled during play, setting 'environment'
 
-- name: "Setup auto apt mirror"
-  copy: >
-          src=etc/apt/{{ item }}
-          dest=/etc/apt/{{ item }}
-  with_items:
-          - sources.list
-          - preferences
-  tags:
-          - apt
-          - apt_sources
-          - gst_update
-
 - name: "Remove default apt proxy"
   file: >
           path=/etc/apt/apt.conf
@@ -76,11 +64,6 @@
 # Ubuntu 'extra' repos not in install iso
 
 # 64 bit os so all repo pkgs need to be all/ or x86_64
-
-- name: "Remove existing local apt repos"
-  shell: >
-          /bin/rm -rf /etc/apt/sources.list.d/*
-  tags:   apt
 
 - name: "Add local apt sources"
   become_method: sudo
