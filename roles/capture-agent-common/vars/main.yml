@@ -5,5 +5,5 @@ manchester_deb_repo: "{{ deb_repo_hostname }}{{ UOM_deb_release }}"
 
 logfile: "{{ GC_log_path }}"
 
-ca_hostname: "{{ ansible_uom_hostname }}"
+ca_hostname: "{{ hostvars[inventory_hostname].ansible_default_ipv4.macaddress | friendly_hostname }}"
 ip_address: "{{ ansible_release_host|default('dhcp') }}"
