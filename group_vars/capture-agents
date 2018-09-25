@@ -2,7 +2,7 @@
 
 deploy_environment: staging
 UOM_deb_release : "{{ 'stable' if deploy_environment == 'production' else 'testing' }}"
-ca_matterhorn_name: "{{ name_mask if name_mask is defined and name_mask else inventory_hostname }}"
+ca_matterhorn_name: "{{ name_mask if name_mask is defined and name_mask else ca_hostname }}"
 matterhorn_host: "{{ GC_staging_matterhorn_host if deploy_environment == 'staging' else GC_matterhorn_host}}"
 matterhorn_user: "{{ GC_staging_matterhorn_user if deploy_environment == 'staging' else GC_matterhorn_user }}"
 matterhorn_password: "{{ GC_staging_matterhorn_password if deploy_environment == 'staging' else GC_matterhorn_password }}"
