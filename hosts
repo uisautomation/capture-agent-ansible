@@ -1,3 +1,4 @@
+---
 [capture-agents-v4l2-split]
 #example-ca ansible_ssh_host=127.0.0.1 ansible_ssh_port=22 ansible_release_host=127.0.0.1 support_group=example-support home_tunnel_port=22 nagios_tunnel_port=None deploy_environment=staging name_mask=None ansible_failovermic=FALSE CA_interactive=None oc_default_series=None oc_default_email=None vl_public=false blinkstick=False vapix_inverted=true ptz_tilt_lock=false vl_private_ep_acl=False cam1_host=192.168.0.90 cam2_host=None CA_interactive_role=example-role
 
@@ -37,7 +38,7 @@
 #example-ca ansible_ssh_host=127.0.0.1 ansible_ssh_port=22 ansible_release_host=127.0.0.1 support_group=example-support home_tunnel_port=22 nagios_tunnel_port=None deploy_environment=staging name_mask=None ansible_failovermic=FALSE CA_interactive=None oc_default_series=None oc_default_email=None vl_public=false blinkstick=False vapix_inverted=true ptz_tilt_lock=false vl_private_ep_acl=False cam1_host=192.168.0.90 cam2_host=None CA_interactive_role=example-role
 vision.csi.cam.ac.uk ansible_ssh_host=131.111.56.116 ansible_ssh_port=22 ansible_release_host=127.0.0.1 support_group=example-support home_tunnel_port=22 nagios_tunnel_port=None deploy_environment=staging name_mask=None ansible_failovermic=FALSE CA_interactive=None oc_default_series=None oc_default_email=None vl_public=false blinkstick=False vapix_inverted=true ptz_tilt_lock=false vl_private_ep_acl=False cam1_host=192.168.0.90 cam2_host=None CA_interactive_role=example-role
 
-uis-capture-agent-02 ansible_ssh_host=172.24.113.133 ansible_ssh_port=22 ansible_release_host=127.0.0.1 support_group=example-support home_tunnel_port=22 nagios_tunnel_port=None deploy_environment=staging name_mask=None ansible_failovermic=FALSE CA_interactive=None oc_default_series=None oc_default_email=None vl_public=false blinkstick=False vapix_inverted=true ptz_tilt_lock=false vl_private_ep_acl=False cam1_host=None cam2_host=None CA_interactive_role=example-role
+#uis-capture-agent-02 ansible_ssh_host=172.24.113.133 ansible_ssh_port=22 ansible_release_host=127.0.0.1 support_group=example-support home_tunnel_port=22 nagios_tunnel_port=None deploy_environment=staging name_mask=None ansible_failovermic=FALSE CA_interactive=None oc_default_series=None oc_default_email=None vl_public=false blinkstick=False vapix_inverted=true ptz_tilt_lock=false vl_private_ep_acl=False cam1_host=None cam2_host=None CA_interactive_role=example-role
 
 [capture-agents-dual-datapath-usb]
 
@@ -51,9 +52,13 @@ uis-capture-agent-02 ansible_ssh_host=172.24.113.133 ansible_ssh_port=22 ansible
 
 [capture-agents-axis-muxed]
 
+[capture-agents-magewell-split]
+uis-capture-agent-02 ansible_host=172.24.113.133 ansible_ssh_port=22 ansible_release_host=127.0.0.1 support_group=example-support home_tunnel_port=22 nagios_tunnel_port=None             deploy_environment=staging name_mask=None ansible_failovermic=FALSE CA_interactive=None oc_default_series=None oc_default_email=None vl_public=false blinkstick=False vapix_inverted=true ptz_tilt_lock=false vl_private_ep_acl=False cam1_host=None cam2_host=None CA_interactive_role=example-role
+
 [capture-agents-v4l2-x2-axis-muxed]
 
 [capture-agents-v4l2-usb]
+uis-capture-agent-03 ansible_host=172.24.193.170 ansible_ssh_port=22 ansible_release_host=127.0.0.1 support_group=example-support home_tunnel_port=22 nagios_tunnel_port=None deploy_environment=staging name_mask=None ansible_failovermic=FALSE CA_interactive=None oc_default_series=tests oc_default_email=None vl_public=false blinkstick=False vapix_inverted=true ptz_tilt_lock=false vl_private_ep_acl=False cam1_host=None cam2_host=None CA_interactive_role=example-role
 
 [capture-agents-v4l2-split]
 
@@ -104,6 +109,15 @@ capture-agents-datapath-axis-usb
 capture-agents-axis-x2-muxed
 capture-agents-axis-muxed
 
+[capture-agents-magewell:children]
+capture-agents-magewell-split
+#capture-agents-magewell-usb
+#capture-agents-dual-magewell-split
+#capture-agents-dual-magewell-usb
+#capture-agents-magewell-axis-muxed
+#capture-agents-magewell-axis-split
+#capture-agents-magewell-axis-usb
+
 [capture-agents-v4l2:children]
 capture-agents-v4l2-x2-axis-muxed
 capture-agents-v4l2-usb
@@ -112,5 +126,6 @@ capture-agents-v4l2-split
 [capture-agents:children]
 capture-agents-blackmagic
 capture-agents-datapath
+capture-agents-magewell
 capture-agents-axis
 capture-agents-v4l2
