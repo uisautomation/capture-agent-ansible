@@ -1,0 +1,11 @@
+---
+GC_profile: Magewell Split Audio
+GC_checkaudiosource_low_alert: -50
+GC_checkaudiosource_check_recording: True
+
+livestream_cmd: ffmpeg -f v4l2 -framerate 30 -video_size hd720 -input_format yuyv422 -thread_queue_size 512 -i /dev/datapath0 -f alsa -ac 2 -thread_queue_size 512 -i pulse -vcodec libx264 -preset veryfast -crf 17 -b:v 6000k -c:a libmp3lame -ar 44100 -f flv rtmp://a.rtmp.youtube.com/live2/{{youtube_stream_key}}
+
+livestreaming: True
+
+CA_camctrl: False
+camera_exists: False

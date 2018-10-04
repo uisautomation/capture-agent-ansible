@@ -1,0 +1,50 @@
+## galicaster-capture-agents-magewell-common/tasks
+---
+# create a magewell install dir
+- name: create a magewell install dir
+  file:
+    path: /opt/magewell
+    state: directory
+  tags:
+          - magewell
+          - magewell_drivers
+
+# untar to the magewell install dir
+- name: Extract magewell drivers
+  unarchive:
+    src: ProCaptureForLinux_3950.tar.gz
+    dest: /opt/magewell
+  tags:
+          - magewell
+          - magewell_drivers
+
+- name: "Install Magewell Drivers"
+  command: ./install.sh -s
+  args:
+    chdir: /opt/magewell/ProCaptureForLinux_3950/
+  register: magewell_driver_installed
+  changed_when: magewell_driver_installed.stdout is defined and magewell_driver_installed.stdout | search("Flash requires upgrading, please wait")
+  tags:
+          - magewell
+          - magewell_drivers
+
+- name: "Magewell Profiles"
+  template: >
+          src=profiles/{{ item }}
+          dest=/etc/galicaster/profiles/{{ item }}
+          group={{ ca_username }}
+          owner={{ ca_username }}
+  with_items:
+          - magewell-split.ini
+          - magewell-usb.ini
+          - dual-magewell-split.ini
+          - dual-magewell-usb.ini
+          - magewell-no-usb.ini
+          - dual-magewell-no-usb.ini
+          - no-video-usb.ini
+  notify: restart galicaster
+  tags:
+          - galicaster
+          - galicaster_config
+          - galicaster_profiles
+          - magewell
