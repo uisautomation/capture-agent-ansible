@@ -1,0 +1,4 @@
+## galicaster-capture-agent-magewell/handlers
+---
+- name: restart galicaster
+  command: /usr/local/bin/kill_gc "Magewell profiles update" false

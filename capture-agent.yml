@@ -24,6 +24,14 @@
     http_proxy: "{{ http_proxy_server }}"
     https_proxy: "{{ https_proxy_server }}"
 
+- hosts: capture-agents-magewell
+  remote_user: root
+  roles:
+      - galicaster-capture-agent-magewell-common
+  environment:
+    http_proxy: "{{ http_proxy_server }}"
+    https_proxy: "{{ https_proxy_server }}"
+
 - hosts: capture-agents-blackmagic-usb:capture-agents-datapath-usb:capture-agents-datapath-axis-usb
   remote_user: root
   roles:
@@ -60,6 +68,14 @@
   remote_user: root
   roles:
       - datapath-axis-common
+  environment:
+    http_proxy: "{{ http_proxy_server }}"
+    https_proxy: "{{ https_proxy_server }}"
+
+- hosts: capture-agent-magewell-split
+  remote_user: root
+  roles:
+      - galicaster-capture-agent-magewell-common
   environment:
     http_proxy: "{{ http_proxy_server }}"
     https_proxy: "{{ https_proxy_server }}"

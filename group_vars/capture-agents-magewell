@@ -1,0 +1,7 @@
+---
+MW_framerate: 30/1
+MW_width: 1920
+MW_height: 1080
+MW_driver: True
+MW_video_name_0: /dev/video0
+MW_video_name_1: /dev/video1
