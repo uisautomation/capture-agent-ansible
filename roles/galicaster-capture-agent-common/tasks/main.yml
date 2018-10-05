@@ -386,3 +386,15 @@
   tags:
           - galicaster
           - blinkstick
+
+- name: Install Galicaster QR code plugin
+  copy:
+    src: qrcode.py
+    dest: /opt/galicaster/galicaster/plugins/qrcode.py
+    owner: galicaster
+    group: galicaster
+    mode: 0644
+  tags:
+    - galicaster
+    - galicaster_install
+    - galicaster_plugins
