@@ -1,5 +1,5 @@
 ---
-GC_profile: Dual v4l2 Datapath Split Audio
+GC_profile: Dual Datapath Split Audio
 GC_profilefailover_device: "{{ '17a00101' if GC_usb_mic_source == 'alsa_input.usb-Samson_Technologies_Samson_UB1-00.analog-stereo' else '0d8c0132' }}"
 GC_profilefailover_profile: Dual Datapath NO Audio
 GC_profilefailover_bool: True
