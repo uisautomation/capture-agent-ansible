@@ -9,11 +9,11 @@ DP_width: 1280
 DP_height: 720
 DP_driver: False
 
-GC_profile: Screen
+GC_profile: Dual v4l2 Split Audio
 
 GC_resolution: auto
 
-GC_qrcode_ignore_track: camera
+#GC_qrcode_ignore_track: camera
 
 max_save_mp_days: 7
 

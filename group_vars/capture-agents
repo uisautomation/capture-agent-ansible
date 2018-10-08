@@ -8,7 +8,7 @@ matterhorn_user: "{{ GC_staging_matterhorn_user if deploy_environment == 'stagin
 matterhorn_password: "{{ GC_staging_matterhorn_password if deploy_environment == 'staging' else GC_matterhorn_password }}"
 GC_version: "{{ 'master' if deploy_environment == 'production' else 'master' }}"
 
-ntp_server: ntp2a.mcc.ac.uk ntp2b.mcc.ac.uk ntp2c.mcc.ac.uk
+ntp_server: ntp0.cam.ac.uk ntp1.cam.ac.uk ntp2.cam.ac.uk
 
 nagios_hosts: 127.0.0.1
 
