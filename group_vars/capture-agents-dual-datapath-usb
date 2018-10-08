@@ -9,7 +9,7 @@ GC_ddp_audiofader_index: 1
 GC_matterhorn_workflow: manchester-sidebyside
 GC_resolution: auto
 
-GC_qrcode_ignore_track: camera
+#GC_qrcode_ignore_track: camera
 
 nagios_temp_sensor: '"Core 0"'
 nagios_load_warn: 14.0

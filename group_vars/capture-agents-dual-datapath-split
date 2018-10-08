@@ -1,14 +1,22 @@
 ---
-GC_profile: Dual Datapath Split Audio
+GC_profile: Dual v4l2 Datapath Split Audio
+GC_profilefailover_device: "{{ '17a00101' if GC_usb_mic_source == 'alsa_input.usb-Samson_Technologies_Samson_UB1-00.analog-stereo' else '0d8c0132' }}"
+GC_profilefailover_profile: Dual Datapath NO Audio
+GC_profilefailover_bool: True
+GC_ddp_audiofader_name: Mic
+GC_ddp_audiofader_index: 1
 
 GC_matterhorn_workflow: manchester-sidebyside
 GC_resolution: auto
 
-GC_qrcode_ignore_track: camera
+#GC_qrcode_ignore_track: camera
 
 nagios_temp_sensor: '"Core 0"'
 nagios_load_warn: 14.0
 nagios_load_crit: 19.0
+
+peakaboo_audio_device: "{{ GC_usb_mic_source }}"
+peakaboo_audio_src: pulsesrc
 
 GC_send_config: True
 
@@ -17,7 +25,7 @@ GC_encoder_high: vaapipostproc ! vaapih264enc rate-control=cbr bitrate=5000
 max_save_mp_days: 14
 
 GC_checkaudiosource_low_alert: -50
-GC_checkaudiosource_check_recording: True
+GC_checkaudiosource_check_recording: False
 
 CA_camctrl: False
 camera_exists: True
