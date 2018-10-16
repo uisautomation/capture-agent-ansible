@@ -230,6 +230,8 @@
           - ntp/crypto/pw
           - ntp/step-tickers
           - ntp/keys
+  tags:
+    - ntp
 
 - name: "Setup CA name"
   template: >
@@ -499,7 +501,7 @@
 
 - name: "Set local time by ntpdate"
   command: >
-          /usr/sbin/ntpdate -s {{ ntp_server }}
+          /usr/sbin/ntpdate -s "{{ ntp_server }}"
   tags:
         - ntp
         - update_ntp
