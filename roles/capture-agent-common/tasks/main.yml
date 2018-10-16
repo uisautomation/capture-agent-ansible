@@ -490,6 +490,13 @@
           state=stopped
   tags:   update_ntp
 
+- name: Set timezone to Europe/London
+  command: >
+          /usr/bin/timedatectl set-timezone Europe/London
+  tags:
+        - ntp
+        - update_ntp
+
 - name: "Set local time by ntpdate"
   command: >
           /usr/sbin/ntpdate -s {{ ntp_server }}
