@@ -492,7 +492,7 @@
 
 - name: Set timezone to Europe/London
   command: >
-          /usr/bin/timedatectl set-timezone Europe/London
+          /usr/bin/timedatectl set-timezone "Europe/London"
   tags:
         - ntp
         - update_ntp
