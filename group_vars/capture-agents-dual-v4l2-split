@@ -1,0 +1,35 @@
+---
+
+GC_encoder: vaapipostproc ! vaapih264enc rate-control=cbr bitrate=2000
+GC_encoder_high: vaapipostproc ! vaapih264enc rate-control=cbr bitrate=6000
+
+DP_video_name_0: /dev/video0
+DP_video_name_1: /dev/video1
+v4l2_caps: image/jpeg,format=YUY2
+DP_framerate: 24/1
+DP_width: 1280
+DP_height: 720
+DP_driver: False
+
+GC_profile: Screen
+
+GC_resolution: auto
+
+GC_qrcode_ignore_track: camera
+
+max_save_mp_days: 7
+
+nagios_temp_sensor: '"Core 0"'
+nagios_load_warn: 14.0
+nagios_load_crit: 19.0
+
+livestreaming: True
+GC_send_config: True
+livestream_cmd: ffmpeg -f v4l2 -framerate 25 -video_size hd720 -input_format yuyv422 -thread_queue_size 512 -i /dev/video0 -f alsa -ac 2 -thread_queue_size 512 -i pulse -vcodec libx264 -preset veryfast -crf 17 -b:v 6000k -c:a libmp3lame -ar 44100 -f flv rtmp://a.rtmp.youtube.com/live2/{{youtube_stream_key}}
+
+GC_checkaudiosource_low_alert: -70
+GC_checkaudiosource_check_recording: True
+
+CA_camctrl: False
+CA_vapixctrl: False
+camera_exists: False
