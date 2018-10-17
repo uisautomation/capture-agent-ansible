@@ -1,0 +1,7 @@
+---
+DP_framerate: 30/1
+DP_width: 1280
+DP_height: 720
+DP_driver: True
+DP_video_name_0: /dev/video0
+DP_video_name_1: /dev/video1
