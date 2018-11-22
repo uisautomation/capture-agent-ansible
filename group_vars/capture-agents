@@ -8,7 +8,7 @@ matterhorn_user: "{{ GC_staging_matterhorn_user if deploy_environment == 'stagin
 matterhorn_password: "{{ GC_staging_matterhorn_password if deploy_environment == 'staging' else GC_matterhorn_password }}"
 GC_version: "{{ 'master' if deploy_environment == 'production' else 'master' }}"
 
-ntp_server: ntp2a.mcc.ac.uk ntp2b.mcc.ac.uk ntp2c.mcc.ac.uk
+ntp_server: 0.uk.pool.ntp.org
 
 nagios_hosts: 127.0.0.1
 
@@ -29,6 +29,7 @@ GC_failovermic_threshold: -40
 GC_failovermic_device: 1
 GC_usb_camera_mic_source: ""
 
+GC_matterhorn_workflow: cam-default
 GC_profilefailover_bool: False
 GC_profilefailover_device: ""
 GC_profilefailover_profile: ""
