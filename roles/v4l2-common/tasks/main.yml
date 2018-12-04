@@ -1,4 +1,7 @@
 ---
+- include_vars: "group_vars/{{ system_type }}.yml"
+  when: system_type is defined
+
 - name: "Install Galicaster Profiles"
   template: >
          src=profiles/{{ item }}

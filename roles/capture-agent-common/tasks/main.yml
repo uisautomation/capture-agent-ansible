@@ -5,6 +5,9 @@
   tags:
           - always
 
+- set_fact:
+     system_type: "{{ ansible_product_name | regex_replace(' ')}}"
+
 # Reinstall OS on variable
 - include_tasks: ../../capture-agent-reinstall/tasks/main.yml
   when:
