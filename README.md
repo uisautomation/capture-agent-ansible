@@ -105,3 +105,25 @@ Example, updating a galicaster conf.ini parameter on evey staging agent:
 ansible-playbook capture-agent.yml --limit mtt-test-* --tags galicaster_config --skip-tags cronjobs,scripts
 
 ```
+
+## Secrets
+
+Secrets have been encrypted using Ansible vault. The following alias will give
+you a ``vault`` alias which can decrypt/encrypt vault variables.
+
+```bash
+$ cd ~/path/to/this/repo
+$ alias vault="ansible-vault --vault-password-file=$PWD/secrets/open-vault"
+```
+
+You can check that you can decrypt secrets by decrypting the test secret:
+
+```bash
+$ vault view secrets/test-secret.txt
+```
+
+The vault password is GPG encrypted with the team's keys and was generated via:
+
+```bash
+$ pwgen -1 64 | gpg --encrypt --recipient automation@uis.cam.ac.uk --armor
+```
