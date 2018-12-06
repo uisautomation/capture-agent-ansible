@@ -17,7 +17,7 @@
     - magewell_drivers
 
 - name: "Install Magewell Drivers"
-  command: ./install.sh -s
+  shell: Y '' | ./install.sh -s
   args:
     chdir: /opt/magewell/ProCaptureForLinux_3950/
   register: magewell_driver_installed
