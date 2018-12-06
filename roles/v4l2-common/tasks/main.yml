@@ -1,6 +1,6 @@
 ---
-- include_vars: "group_vars/{{ system_type }}.yml"
-  when: system_type is defined
+- include_vars: "group_vars/{{ motherboard.stdout }}.yml"
+  when: motherboard is defined
 
 - name: "Install Galicaster Profiles"
   template: >
