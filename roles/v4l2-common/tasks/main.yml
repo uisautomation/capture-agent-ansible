@@ -1,5 +1,5 @@
 ---
-- include_vars: "group_vars/{{ motherboard.stdout }}.yml"
+- include_vars: "group_vars/motherboards/{{ motherboard.stdout }}.yml"
   when: motherboard is defined
 
 - name: "Install Galicaster Profiles"
