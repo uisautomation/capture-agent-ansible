@@ -17,3 +17,16 @@
          - galicaster
          - galicaster_config
          - galicaster_profiles
+
+- name: "Friendly device name configuration"
+  template:
+    src: "70-friendly-device-names.rules"
+    dest: "/etc/udev/rules.d/70-friendly-device-names.rules"
+    group: "root"
+    owner: "root"
+    mode: "0644"
+  tags:
+    - galicaster
+    - galicaster_config
+    - galicaster_profiles
+    - v4l_devices

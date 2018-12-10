@@ -1,2 +1,13 @@
+# Variables which are specific to a particular motherboard.
+
 DP_video_name_0: /dev/v4l/by-path/pci-0000:00:14.0-usb-0:5:1.1-video-index0
 DP_video_name_1: /dev/v4l/by-path/pci-0000:00:14.0-usb-0:6:1.1-video-index0
+
+# Device paths suitable for passing to udev which identify the resenter and
+# presentation capture devices by reference to physical ports.
+
+presenter_audio_device_path: "/devices/pci0000:00/0000:00:14.0/usb2/2-5/2-5:1.3/sound/card?"
+presenter_video_device_path: "/devices/pci0000:00/0000:00:14.0/usb2/2-5/2-5:1.1/video4linux/video?"
+
+presentation_audio_device_path: "/devices/pci0000:00/0000:00:14.0/usb2/2-6/2-6:1.3/sound/card?"
+presentation_video_device_path: "/devices/pci0000:00/0000:00:14.0/usb2/2-6/2-6:1.1/video4linux/video?"

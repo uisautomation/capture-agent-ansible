@@ -1,0 +1,10 @@
+# 70-friendly-device-names.rules
+#
+# Add friendly symlinks for v4l devices and provide friendly names for sound
+# cards. See the effect of the video symlinks via "ls /dev/video-*" and the
+# effect of audio names via "arecord -l".
+
+SUBSYSTEM=="sound", DEVPATH=="{{ presenter_audio_device_path }}", ATTR{id}="presenter", ENV{ID_ID}="presenter"
+SUBSYSTEM=="video4linux", DEVPATH=="{{ presenter_video_device_path }}", SYMLINK+="video-presenter"
+SUBSYSTEM=="sound", DEVPATH=="{{ presentation_audio_device_path }}", ATTR{id}="presentation", ENV{ID_ID}="presentation"
+SUBSYSTEM=="video4linux", DEVPATH=="{{ presentation_video_device_path }}", SYMLINK+="video-presentation"
