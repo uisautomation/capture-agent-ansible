@@ -1,4 +1,7 @@
 ---
+- include_vars: "group_vars/{{ motherboard.stdout }}.yml"
+  when: motherboard is defined
+
 - name: "Install Galicaster Profiles"
   template: >
          src=profiles/{{ item }}
