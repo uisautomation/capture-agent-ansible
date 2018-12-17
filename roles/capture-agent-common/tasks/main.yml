@@ -5,12 +5,12 @@
   tags:
           - always
 
-# Reinstall OS on variable
+# Reinstall OS on variable (limit to xenial to prevent overwriting bionic)
 - include_tasks: ../../capture-agent-reinstall/tasks/main.yml
   when:
     - ansible_distribution == 'Ubuntu'
     - reinstall_os|default(false)
-    #- ansible_distribution_release == 'precise'
+    - ansible_distribution_release == 'xenial'
 
 ## Post Install tasks
 # check that os update has happened otherwise fail
@@ -19,8 +19,8 @@
   register: codename
 
 - fail:
-    msg: "This ansible playbook requires ubuntu xenial 16.04 be installed before it will run"
-  when: ansible_distribution == 'Ubuntu' and codename.stdout != 'xenial'
+    msg: "This ansible playbook requires ubuntu xenial 16.04 or bionic 18.04 be installed before it will run"
+  when: ansible_distribution == 'Ubuntu' and codename.stdout != 'xenial' and codename.stdout != 'bionic'
 
 ## APT
 
@@ -39,7 +39,15 @@
   with_items:
           - 10periodic
           - 20auto-upgrades
-          - 10defaultrelease
+  tags:
+          - apt
+          - apt_release
+          - gst_update
+
+- name: "Turn off auto update (default release)"
+  template: >
+          src=10defaultrelease.j2
+          dest=/etc/apt/apt.conf.d/10defaultrelease
   tags:
           - apt
           - apt_release
@@ -99,9 +107,9 @@
     dpkg_options: 'force-confold,force-confdef'
     install_recommends: yes
   with_items:
-          - linux-generic-hwe-16.04
-          - xserver-xorg-hwe-16.04
-          - linux-headers-generic-hwe-16.04
+          - linux-generic-hwe-{{ ansible_distribution_version }}
+          - xserver-xorg-hwe-{{ ansible_distribution_version }}
+          - linux-headers-generic-hwe-{{ ansible_distribution_version }}
   when: upgrade_hwe|default(false)
   register: kernel_update
   notify:
@@ -352,6 +360,7 @@
           insertbefore="exit 0"
           regexp="rfkill block bluetooth"
           line="rfkill block bluetooth"
+          create=yes
   tags:
           - scripts
           - disable_bluetooth
@@ -408,6 +417,7 @@
           dest=/etc/default/rcS
           regexp="^FSCKFIX="
           line="FSCKFIX=yes"
+          create=yes
   tags:
           - grub
           - boot
@@ -542,7 +552,7 @@
   when:  ferm.changed
   tags:  iptables
 
-## NAGIOS
+## NAGIOS (limit to 16.04 - missing packages in 18.04)
 
 - name: "Install packages required by nagios-nrpe"
   apt: >
@@ -552,12 +562,14 @@
           - nagios-nrpe-server
           - nagios-plugins
           - libnagios-plugin-perl
+  when:   ansible_distribution_version == '16.04'
   tags:   nagios
 
 - name: "Configure nagios-nrpe-server"
   template: >
           src=nrpe.j2
           dest=/etc/nagios/nrpe.cfg
+  when:   ansible_distribution_version == '16.04'
   tags:
           - nagios
           - nagios_config
@@ -572,6 +584,7 @@
           - check_blinkstick
           - check_linux_stats.pl
           - check_low_load
+  when:   ansible_distribution_version == '16.04'
   tags:
           - nagios
           - nagios_plugins
@@ -581,6 +594,7 @@
           pkg=libsys-statistics-linux-perl
           state=latest
           force=yes
+  when:   ansible_distribution_version == '16.04'
   tags:
           - nagios
           - nagios_plugins
@@ -592,6 +606,7 @@
           mode=0755
   with_items:
           - check_lm_sensors
+  when:   ansible_distribution_version == '16.04'
   tags:
           - nagios
           - nagios_plugins
@@ -603,6 +618,7 @@
           state=latest
           force=yes
   register: sensor_change
+  when:   ansible_distribution_version == '16.04'
   tags:
           - nagios
           - sensors
@@ -610,7 +626,9 @@
 - name: "Run lm-sensors auto-conf"
   shell: >
           /usr/sbin/sensors-detect --auto;
-  when: sensor_change.changed
+  when:
+          - sensor_change.changed
+          - ansible_distribution_version == '16.04'
   tags:
           - nagios
           - sensors
@@ -622,7 +640,9 @@
           state=present
           insertafter=EOF
           regexp='^coretemp?'
-  when: legacy
+  when:
+          - legacy
+          - ansible_distribution_version == '16.04'
   tags:
           - nagios
           - sensors
@@ -634,7 +654,9 @@
           state=present
           insertafter=EOF
           regexp='^it87?'
-  when: legacy
+  when:
+          - legacy
+          - ansible_distribution_version == '16.04'
   tags:
           - nagios
           - sensors
@@ -643,7 +665,10 @@
   service: >
           name=module-init-tools
           state=restarted
-  when: legacy and sensor_change.changed
+  when:
+          - legacy
+          - sensor_change.changed
+          - ansible_distribution_version == '16.04'
   tags:
           - nagios
           - sensors
@@ -652,6 +677,7 @@
   service: >
           name=nagios-nrpe-server
           state=restarted
+  when:   ansible_distribution_version == '16.04'
   tags:
           - nagios
           - nagios_config
