@@ -9,7 +9,7 @@
 #   when:   remove_galicaster|default(false)
 #   tags:   galicaster
 
-- name: "Install Galicaster support packages"
+- name: "Install Galicaster support packages (common)"
   apt: >
           pkg={{ item }}
           update_cache=yes
@@ -40,7 +40,6 @@
           - onboard
           - onboard-data
           - ffmpeg
-          - python-imaging
           - imagemagick
           - python-alsaaudio
           - nfs-common
@@ -49,6 +48,34 @@
           - gstreamer1.0-vaapi
           - gstreamer1.0-tools
           - xdotool
+  tags:
+          - galicaster
+          - on_top
+          - gst_update
+
+- name: "Install Galicaster support packages (16.04)"
+  apt: >
+          pkg={{ item }}
+          update_cache=yes
+          state=latest
+          force=yes
+  with_items:
+          - python-imaging
+  when:   ansible_distribution_version == '16.04'
+  tags:
+          - galicaster
+          - on_top
+          - gst_update
+
+- name: "Install Galicaster support packages (18.04)"
+  apt: >
+          pkg={{ item }}
+          update_cache=yes
+          state=latest
+          force=yes
+  with_items:
+          - python-pil
+  when:   ansible_distribution_version == '18.04'
   tags:
           - galicaster
           - on_top
@@ -195,6 +222,7 @@
           mode=0755
   with_items:
           - check_galicaster_up
+  when:   ansible_distribution_version == '16.04'
   tags:
           - galicaster
           - galicaster_config
@@ -207,6 +235,7 @@
           dest=/etc/nagios/nrpe.cfg
           line="command[check_galicaster_up]=/usr/lib/nagios/plugins/check_galicaster_up"
           state=present
+  when:   ansible_distribution_version == '16.04'
   tags:
           - galicaster
           - galicaster_config
@@ -220,6 +249,7 @@
           dest=/etc/nagios/nrpe.cfg
           line="command[check_aud_gc]=/etc/galicaster/nagios/plugins/nagios_audio_error"
           state=present
+  when:   ansible_distribution_version == '16.04'
   tags:
           - galicaster
           - galicaster_config
@@ -232,6 +262,7 @@
   service: >
           name=nagios-nrpe-server
           state=restarted
+  when:   ansible_distribution_version == '16.04'
   tags:
           - galicaster
           - galicaster_config
