@@ -269,9 +269,9 @@
   tags: vnc
 
 - name: vnc - setup x11vnc password
-  shell: x11vnc -storepasswd {{ ca_vnc_password }} /home/{{ ca_username }}/.vnc/passwd
+  shell: "x11vnc -storepasswd {{ ca_vnc_password }} /home/{{ ca_username }}/.vnc/passwd"
   args:
-    creates: /home/{{ ca_username }}/.vnc/passwd
+    creates: "/home/{{ ca_username }}/.vnc/passwd"
   tags: vnc
 
 - name: vnc - change permissions of x11vnc password file
@@ -409,7 +409,8 @@
 
 - name: "Update GRUB"
   shell: /usr/sbin/update-grub > /tmp/grub-update
-  creates: /tmp/grub-update
+  args:
+    creates: /tmp/grub-update
   when: grub_change.changed
   tags: grub
 
