@@ -1,159 +1,135 @@
 ## galicaster-capture-agent-common/tasks
 ---
-# Galicaster installed via git now
-# - name: "Remove Current Galicaster version"
-#   apt: >
-#           pkg=galicaster
-#           state=absent
-#           force=yes
-#   when:   remove_galicaster|default(false)
-#   tags:   galicaster
 
 - name: "Install Galicaster support packages (common)"
-  apt: >
-          pkg={{ item }}
-          update_cache=yes
-          state=latest
-          force=yes
-  with_items:
-          - guvcview
-          - python2.7
-          - python-pip
-          - python-setuptools
-          - gstreamer1.0-plugins-base
-          - gstreamer1.0-plugins-bad
-          - gstreamer1.0-plugins-ugly
-          - gstreamer1.0-plugins-good
-          - gstreamer1.0-pulseaudio
-          - gstreamer1.0-alsa
-          - gstreamer1.0-libav
-          - gir1.2-gstreamer-1.0
-          - gir1.2-gtk-3.0
-          - gir1.2-gst-plugins-base-1.0
-          - python-pycurl
-          - python-bottle
-          - python-glade2
-          - python-icalendar
-          - python-gi
-          - python-dbus
-          - python-simplejson
-          - onboard
-          - onboard-data
-          - ffmpeg
-          - imagemagick
-          - python-alsaaudio
-          - nfs-common
-          - git
-          - python-requests
-          - gstreamer1.0-vaapi
-          - gstreamer1.0-tools
-          - xdotool
+  apt:
+    pkg:
+      - guvcview
+      - python2.7
+      - python-pip
+      - python-setuptools
+      - gstreamer1.0-plugins-base
+      - gstreamer1.0-plugins-bad
+      - gstreamer1.0-plugins-ugly
+      - gstreamer1.0-plugins-good
+      - gstreamer1.0-pulseaudio
+      - gstreamer1.0-alsa
+      - gstreamer1.0-libav
+      - gir1.2-gstreamer-1.0
+      - gir1.2-gtk-3.0
+      - gir1.2-gst-plugins-base-1.0
+      - python-pycurl
+      - python-bottle
+      - python-glade2
+      - python-icalendar
+      - python-gi
+      - python-dbus
+      - python-simplejson
+      - onboard
+      - onboard-data
+      - ffmpeg
+      - imagemagick
+      - python-alsaaudio
+      - nfs-common
+      - git
+      - python-requests
+      - gstreamer1.0-vaapi
+      - gstreamer1.0-tools
+      - xdotool
+    update_cache: yes
+    state: latest
+    force: yes
   tags:
-          - galicaster
-          - on_top
-          - gst_update
+    - galicaster
+    - on_top
+    - gst_update
 
 - name: "Install Galicaster support packages (16.04)"
-  apt: >
-          pkg={{ item }}
-          update_cache=yes
-          state=latest
-          force=yes
-  with_items:
-          - python-imaging
-  when:   ansible_distribution_version == '16.04'
+  apt:
+    pkg: python-imaging
+    update_cache: yes
+    state: latest
+    force: yes
+  when: ansible_distribution_version == '16.04'
   tags:
-          - galicaster
-          - on_top
-          - gst_update
+    - galicaster
+    - on_top
+    - gst_update
 
 - name: "Install Galicaster support packages (18.04)"
-  apt: >
-          pkg={{ item }}
-          update_cache=yes
-          state=latest
-          force=yes
-  with_items:
-          - python-pil
-  when:   ansible_distribution_version == '18.04'
+  apt:
+    pkg: python-pil
+    update_cache: yes
+    state: latest
+    force: yes
+  when:  ansible_distribution_version == '18.04'
   tags:
-          - galicaster
-          - on_top
-          - gst_update
+    - galicaster
+    - on_top
+    - gst_update
 
 - name: "Install Galicaster python pip support packages"
-  pip: >
-          name={{ item }}
-          state=latest
-  with_items:
-          - icalendar
-          - libusb1
-          - pyscreenshot
-          - python-meteor
-          - python-ddp
-          - pyserial
-          - blinkstick
+  pip:
+    name:
+      - icalendar
+      - libusb1
+      - pyscreenshot
+      - python-meteor
+      - python-ddp
+      - pyserial
+      - blinkstick
+    state: latest
   tags:
-          - galicaster
-          - pip
-          - blinkstick
-          - peakaboo
+    - galicaster
+    - pip
+    - blinkstick
+    - peakaboo
 
 - name: "Create Galicaster configuration directory"
-  file: >
-          path=/etc/galicaster
-          state=directory
-          group={{ ca_username }}
-          owner={{ ca_username }}
-          recurse=yes
+  file:
+    path: /etc/galicaster
+    state: directory
+    group: "{{ ca_username }}"
+    owner: "{{ ca_username }}"
+    recurse: yes
   tags:
-          - galicaster
-          - galicaster_config
-          - galicaster_profiles
+    - galicaster
+    - galicaster_config
+    - galicaster_profiles
 
 - name: "Create Galicaster profiles directory"
-  file: >
-          path=/etc/galicaster/profiles
-          state=directory
-          group={{ ca_username }}
-          owner={{ ca_username }}
-          recurse=yes
+  file:
+    path: /etc/galicaster/profiles
+    state: directory
+    group: "{{ ca_username }}"
+    owner: "{{ ca_username }}"
+    recurse: yes
   tags:
-          - galicaster
-          - galicaster_config
-          - galicaster_profiles
-
-# - name: "set admin server"
-#   set_fact:
-#     matterhorn_host: "{{ GC_staging_matterhorn_host }}"
-#   when: deploy_environment is defined and deploy_environment == 'staging'
-#   tags:
-#           - galicaster
-#           - galicaster_config
-
-
+    - galicaster
+    - galicaster_config
+    - galicaster_profiles
 
 - name: fetch remote galicaster conf for reading
   fetch:
     src: /etc/galicaster/conf.ini
-    dest: /tmp/{{inventory_hostname}}/galicaster.conf.tmp.ini
+    dest: "/tmp/{{inventory_hostname}}/galicaster.conf.tmp.ini"
     flat: yes
   ignore_errors: yes
   tags:
-          - galicaster
-          - galicaster_config
-          - peakaboo
-          - ddp
+    - galicaster
+    - galicaster_config
+    - peakaboo
+    - ddp
 
 - name: Set DDP Token
   set_fact:
     ddp_token: "{{ lookup('ini', 'token section=ddp file=/tmp/{{inventory_hostname}}/galicaster.conf.tmp.ini') }}"
   ignore_errors: yes
   tags:
-          - galicaster
-          - galicaster_config
-          - peakaboo
-          - ddp
+    - galicaster
+    - galicaster_config
+    - peakaboo
+    - ddp
 
 # - debug: msg="{{ ddp_token }}"
 #   tags:
@@ -163,172 +139,173 @@
 #           - ddp
 
 - name: "Replace Galicaster config"
-  template: >
-          src=conf_ini.j2
-          dest=/etc/galicaster/conf.ini
-          owner={{ ca_username }}
-          group={{ ca_username }}
+  template:
+    src: conf_ini.j2
+    dest: /etc/galicaster/conf.ini
+    owner: "{{ ca_username }}"
+    group: "{{ ca_username }}"
   notify: restart galicaster
   tags:
-          - galicaster
-          - galicaster_config
-          - blinkstick
+    - galicaster
+    - galicaster_config
+    - blinkstick
 
 - name: "Create Galicaster log directory"
-  file: >
-          path=/var/log/galicaster
-          owner={{ ca_username }}
-          group={{ ca_username }}
-          state=directory
-          recurse=yes
+  file:
+    path: /var/log/galicaster
+    owner: "{{ ca_username }}"
+    group: "{{ ca_username }}"
+    state: directory
+    recurse: yes
   tags:
-          - galicaster
-          - galicaster_config
+    - galicaster
+    - galicaster_config
 
 - name: "Configure Galicaster log rotation"
-  copy: >
-          src=etc/logrotate.d/galicaster
-          dest=/etc/logrotate.d/galicaster
+  copy:
+    src: etc/logrotate.d/galicaster
+    dest: /etc/logrotate.d/galicaster
 
 - name: "Copy Galicaster clean script"
-  copy: >
-          src=usr/{{ item }}
-          dest=/usr/{{ item }}
-          mode=755
+  copy:
+    src: "usr/{{ item }}"
+    dest: "/usr/{{ item }}"
+    mode: "0755"
   with_items:
-          - local/bin/clean_ca
+    - local/bin/clean_ca
   tags:
-          - galicaster
-          - galicaster_config
-          - cronjobs
-          - scripts
-          - cleanscript
+    - galicaster
+    - galicaster_config
+    - cronjobs
+    - scripts
+    - cleanscript
 
 - name: "Copy Galicaster kill script"
-  template: >
-          src=kill_gc.j2
-          dest=/usr/local/bin/kill_gc
-          mode=755
+  template:
+    src: kill_gc.j2
+    dest: /usr/local/bin/kill_gc
+    mode: "0755"
   tags:
-          - galicaster
-          - galicaster_config
-          - cronjobs
-          - scripts
+    - galicaster
+    - galicaster_config
+    - cronjobs
+    - scripts
 
 - name: "Copy custom Galicaster nagios plugins to nagios dir"
-  copy: >
-          src={{ item }}
-          dest=/usr/lib/nagios/plugins/
-          mode=0755
+  copy:
+    src: "{{ item }}"
+    dest: /usr/lib/nagios/plugins/
+    mode: "0755"
   with_items:
-          - check_galicaster_up
-  when:   ansible_distribution_version == '16.04'
+    - check_galicaster_up
+  when: ansible_distribution_version == '16.04'
   tags:
-          - galicaster
-          - galicaster_config
-          - scripts
-          - nagios
-          - galicaster_nagios
+    - galicaster
+    - galicaster_config
+    - scripts
+    - nagios
+    - galicaster_nagios
 
 - name: "Append Galicaster check custom nagios command to nrpe config"
-  lineinfile: >
-          dest=/etc/nagios/nrpe.cfg
-          line="command[check_galicaster_up]=/usr/lib/nagios/plugins/check_galicaster_up"
-          state=present
-  when:   ansible_distribution_version == '16.04'
+  lineinfile:
+    dest: /etc/nagios/nrpe.cfg
+    line: "command[check_galicaster_up]=/usr/lib/nagios/plugins/check_galicaster_up"
+    state: present
+  when: ansible_distribution_version == '16.04'
   tags:
-          - galicaster
-          - galicaster_config
-          - scripts
-          - nagios
-          - nagios_config
-          - galicaster_nagios
+    - galicaster
+    - galicaster_config
+    - scripts
+    - nagios
+    - nagios_config
+    - galicaster_nagios
 
 - name: "Append Galicaster audio custom nagios command to nrpe config"
-  lineinfile: >
-          dest=/etc/nagios/nrpe.cfg
-          line="command[check_aud_gc]=/etc/galicaster/nagios/plugins/nagios_audio_error"
-          state=present
-  when:   ansible_distribution_version == '16.04'
+  lineinfile:
+    dest: /etc/nagios/nrpe.cfg
+    line: "command[check_aud_gc]=/etc/galicaster/nagios/plugins/nagios_audio_error"
+    state: present
+  when: ansible_distribution_version == '16.04'
   tags:
-          - galicaster
-          - galicaster_config
-          - scripts
-          - nagios
-          - nagios_config
-          - galicaster_nagios
+    - galicaster
+    - galicaster_config
+    - scripts
+    - nagios
+    - nagios_config
+    - galicaster_nagios
 
 - name: "Restart nagios-nrpe"
-  service: >
-          name=nagios-nrpe-server
-          state=restarted
-  when:   ansible_distribution_version == '16.04'
+  service:
+    name: nagios-nrpe-server
+    state: restarted
+  when: ansible_distribution_version == '16.04'
   tags:
-          - galicaster
-          - galicaster_config
-          - scripts
-          - nagios
-          - nagios_config
-          - galicaster_nagios
+    - galicaster
+    - galicaster_config
+    - scripts
+    - nagios
+    - nagios_config
+    - galicaster_nagios
 
 - name: "Copy templated scripts"
-  template: >
-          src=check_galicaster.j2
-          dest=/usr/local/bin/check_galicaster
-          mode=755
+  template:
+    src: check_galicaster.j2
+    dest: /usr/local/bin/check_galicaster
+    mode: "0755"
   tags:
-          - galicaster
-          - galicaster_config
-          - cronjobs
-          - scripts
+    - galicaster
+    - galicaster_config
+    - cronjobs
+    - scripts
 
 - name: "Copy Galicaster start script"
-  template: >
-          src=galicaster.j2
-          dest=/usr/bin/galicaster
-          mode=755
+  template:
+    src: galicaster.j2
+    dest: /usr/bin/galicaster
+    mode: "0755"
   tags:
-          - galicaster
-          - galicaster_config
-          - cronjobs
-          - scripts
-          - galicaster_start
+    - galicaster
+    - galicaster_config
+    - cronjobs
+    - scripts
+    - galicaster_start
 
 - name: "Setup check Galicaster cron job"
-  cron: >
-          name="check galicaster"
-          user={{ ca_username }}
-          minute="*/1"
-          job="/usr/local/bin/check_galicaster > /dev/null 2>&1"
+  cron:
+    name: "check galicaster"
+    user: "{{ ca_username }}"
+    minute: "*/1"
+    job: "/usr/local/bin/check_galicaster > /dev/null 2>&1"
   tags:
-          - galicaster
-          - galicaster_config
-          - cronjobs
+    - galicaster
+    - galicaster_config
+    - cronjobs
 
 - name: "Setup Galicaster cleanup cron job"
-  cron: >
-          name="clean Galicaster"
-          user={{ ca_username }}
-          minute="0"
-          hour="22"
-          job="/usr/local/bin/clean_ca"
+  cron:
+    name: "clean Galicaster"
+    user: "{{ ca_username }}"
+    minute: "0"
+    hour: "22"
+    job: "/usr/local/bin/clean_ca"
   tags:
-          - galicaster
-          - galicaster_config
-          - cronjobs
+    - galicaster
+    - galicaster_config
+    - cronjobs
 
 - name: "Bring Galicaster top of desktop"
-  cron: >
-          name="Galicaster on top"
-          user={{ ca_username }}
-          minute="45"
-          hour="08"
-          job="export DISPLAY=:0.0 && xdotool search --class Galicaster windowactivate"
+  cron:
+    name: "Galicaster on top"
+    user: "{{ ca_username }}"
+    minute: "45"
+    hour: "08"
+    job: "export DISPLAY=:0.0 && xdotool search --class Galicaster windowactivate"
   tags:
-          - galicaster
-          - galicaster_config
-          - cronjobs
-          - on_top
+    - galicaster
+    - galicaster_config
+    - cronjobs
+    - on_top
+
 #- name: "Setup Autostart for Galicaster"
 #  file: >
 #          src=/usr/share/galicaster/docs/autostart/galicaster.desktop
@@ -343,71 +320,50 @@
 #          - autostart
 
 - name: "Setup CA user's autostarts"
-  template: >
-          src=run_galicaster.py.desktop.j2
-          dest=/home/{{ ca_username }}/.config/autostart/run_galicaster.py.desktop
-          owner={{ ca_username }}
-          group={{ ca_username }}
-          mode=0644
+  template:
+    src: run_galicaster.py.desktop.j2
+    dest: "/home/{{ ca_username }}/.config/autostart/run_galicaster.py.desktop"
+    owner: "{{ ca_username }}"
+    group: "{{ ca_username }}"
+    mode: "0644"
   tags:
-           - galicaster
-           - galicaster_config
-           - autostart
+    - galicaster
+    - galicaster_config
+    - autostart
 
 - name: "Setup Galicaster Restart cron job"
-  cron: >
-          name="restart GC"
-          user=root
-          minute="{{ 59 | random }}"
-          hour="{{ [ '6', '7' ] | random }}"
-          job="/usr/local/bin/kill_gc 'morning restart' false"
+  cron:
+    name: "restart GC"
+    user: root
+    minute: "{{ 59 | random }}"
+    hour: "{{ [ '6', '7' ] | random }}"
+    job: "/usr/local/bin/kill_gc 'morning restart' false"
   tags:
-          - cronjobs
-          - gcrestart
-          - galicaster
-
-- name: "Create backuprepo Galicaster plugin mount point directory"
-  file: >
-          path=/mnt/backup-repo
-          owner={{ ca_username }}
-          group={{ ca_username }}
-          state=directory
-          recurse=yes
-  tags:
-          - backup-repo
-          - galicaster
-
-- name: "Create backuprepo Galicaster plugin mount point in fstab"
-  lineinfile: >
-          dest=/etc/fstab
-          line="10.99.139.23:mtt-share/Repository       /mnt/backup-repo  nfs     defaults,users,noauto       0       0"
-          state=present
-  tags:
-          - backup-repo
-          - galicaster
+    - cronjobs
+    - gcrestart
+    - galicaster
 
 - name: "Create Galicaster application directory"
-  file: >
-          path=/opt/galicaster
-          state=directory
-          group={{ ca_username }}
-          owner={{ ca_username }}
-# recurse=yes
+  file:
+    path: /opt/galicaster
+    state: directory
+    group: "{{ ca_username }}"
+    owner: "{{ ca_username }}"
+    # recurse=yes
   tags:
-          - galicaster
-          - galicaster_install
-
+    - galicaster
+    - galicaster_install
 
 - name: "Install Galicaster from git"
-  git: >
-          repo={{ GC_repo }}
-          dest=/opt/galicaster
-          version={{ GC_version }}
+  git:
+    repo: "{{ GC_repo }}"
+    dest: /opt/galicaster
+    version: "{{ GC_version }}"
   become: yes
   become_user: "{{ ca_username }}"
   tags:
-          - galicaster
-          - galicaster_install
+    - galicaster
+    - galicaster_install
 
 - name: "set blinkstick udev rule (so non root can use)"
   shell: blinkstick --add-udev-rule
@@ -415,8 +371,8 @@
     creates: /etc/udev/rules.d/85-blinkstick.rules
   register: blinkstick_udev
   tags:
-          - galicaster
-          - blinkstick
+    - galicaster
+    - blinkstick
 
 - name: Install Galicaster QR code plugin
   copy:
@@ -424,7 +380,7 @@
     dest: /opt/galicaster/galicaster/plugins/qrcode.py
     owner: galicaster
     group: galicaster
-    mode: 0644
+    mode: "0644"
   tags:
     - galicaster
     - galicaster_install
