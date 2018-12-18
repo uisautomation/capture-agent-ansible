@@ -2,15 +2,14 @@
 ---
 # Always include host specific machine facts
 - include_tasks: set_facts.yml
-  tags:
-          - always
+  tags: always
 
-# Reinstall OS on variable
+# Reinstall OS on variable (limit to xenial to prevent overwriting bionic)
 - include_tasks: ../../capture-agent-reinstall/tasks/main.yml
   when:
     - ansible_distribution == 'Ubuntu'
     - reinstall_os|default(false)
-    #- ansible_distribution_release == 'precise'
+    - ansible_distribution_release == 'xenial'
 
 ## Post Install tasks
 # check that os update has happened otherwise fail
@@ -19,47 +18,55 @@
   register: codename
 
 - fail:
-    msg: "This ansible playbook requires ubuntu xenial 16.04 be installed before it will run"
-  when: ansible_distribution == 'Ubuntu' and codename.stdout != 'xenial'
+    msg: "This ansible playbook requires ubuntu xenial 16.04 or bionic 18.04 be installed before it will run"
+  when: ansible_distribution == 'Ubuntu' and codename.stdout != 'xenial' and codename.stdout != 'bionic'
 
 ## APT
 
 # apt proxy handled during play, setting 'environment'
 
 - name: "Remove default apt proxy"
-  file: >
-          path=/etc/apt/apt.conf
-          state=absent
-  tags:   apt
+  file:
+    path: /etc/apt/apt.conf
+    state: absent
+  tags: apt
 
 - name: "Turn off auto update"
-  copy: >
-          src=etc/apt/apt.conf.d/{{ item }}
-          dest=/etc/apt/apt.conf.d/{{ item }}
+  copy:
+    src: etc/apt/apt.conf.d/{{ item }}
+    dest: /etc/apt/apt.conf.d/{{ item }}
   with_items:
-          - 10periodic
-          - 20auto-upgrades
-          - 10defaultrelease
+    - 10periodic
+    - 20auto-upgrades
   tags:
-          - apt
-          - apt_release
-          - gst_update
+    - apt
+    - apt_release
+    - gst_update
+
+- name: "Turn off auto update (default release)"
+  template:
+    src: 10defaultrelease.j2
+    dest: /etc/apt/apt.conf.d/10defaultrelease
+  tags:
+    - apt
+    - apt_release
+    - gst_update
 
 - name: "Generate apt service config folders"
-  file: >
-          path=/etc/systemd/system/apt-daily.timer.d
-          state=directory
-          recurse=yes
+  file:
+    path: /etc/systemd/system/apt-daily.timer.d
+    state: directory
+    recurse: yes
   tags:
-          - apt
+    - apt
 
 - name: "Configure apt autoupgrade service as off"
-  template: >
-          src=apt-daily.timer.conf.j2
-          dest=/etc/systemd/system/apt-daily.timer.d/apt-daily.timer.conf
-          mode=664
+  template:
+    src: apt-daily.timer.conf.j2
+    dest: /etc/systemd/system/apt-daily.timer.d/apt-daily.timer.conf
+    mode: "0664"
   tags:
-          - apt
+    - apt
 
 # Ubuntu 'extra' repos not in install iso
 
@@ -67,31 +74,31 @@
 
 - name: "Add local apt sources"
   become_method: sudo
-  apt_repository: >
-          repo="{{ item }}"
-          state=present
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
   with_items:
-          - "deb {{ manchester_deb_repo }} all/"
+    - "deb {{ manchester_deb_repo }} all/"
   when: deb_repo_hostname|default(false)
-  tags:   apt
+  tags: apt
 
 - name: "Update apt cache"
-  apt: update_cache=yes
+  apt:
+    update_cache: yes
   become_method: sudo
   tags:
-          - apt
-          - apt_update
-          - gst_update
+    - apt
+    - apt_update
+    - gst_update
 
 - name: "Remove broken packages"
-  apt: >
-          pkg={{ item }}
-          state=absent
-  with_items:
-          - libgweather-common
+  apt:
+    pkg:
+      - libgweather-common
+    state: absent
   tags:
-          - apt
-          - apt_update
+    - apt
+    - apt_update
 
 - name: "Upgrade kernel to latest HWE version"
   apt:
@@ -99,29 +106,29 @@
     dpkg_options: 'force-confold,force-confdef'
     install_recommends: yes
   with_items:
-          - linux-generic-hwe-16.04
-          - xserver-xorg-hwe-16.04
-          - linux-headers-generic-hwe-16.04
+    - linux-generic-hwe-{{ ansible_distribution_version }}
+    - xserver-xorg-hwe-{{ ansible_distribution_version }}
+    - linux-headers-generic-hwe-{{ ansible_distribution_version }}
   when: upgrade_hwe|default(false)
   register: kernel_update
   notify:
     - Restart host
     - Wait for host to restart
   tags:
-          - apt
-          - apt_update
+    - apt
+    - apt_update
 
 - name: "Copy new xserver Xorg config files"
-  copy: >
-          src=etc/X11/{{ item }}
-          dest=/etc/X11/xorg.conf
+  copy:
+    src: etc/X11/{{ item }}
+    dest: /etc/X11/xorg.conf
   with_items:
-          - xorg-new.conf
+    - xorg-new.conf
   when: upgrade_hwe|default(false)
   tags:
-          - ca_config
-          - xorg
-          - apt_update
+    - ca_config
+    - xorg
+    - apt_update
 
 - name: "do a dist upgrade"
   apt:
@@ -133,128 +140,125 @@
     - Restart host
     - Wait for host to restart
   tags:
-          - apt
-          - apt_update
+    - apt
+    - apt_update
 ## KERNEL
 
 - name: "Configure kernel system parameters"
-  template: >
-          src=sysctl.j2
-          dest=/etc/sysctl.conf
+  template:
+    src: sysctl.j2
+    dest: /etc/sysctl.conf
   tags:
-          - kernel
-          - sysctl
+    - kernel
+    - sysctl
 
 ## SYSTEM
 
 - name: "Install system support packages"
-  apt: >
-          pkg={{ item }}
-          state=present
-  with_items:
-          - ssh
-          - nano
-          - snmp
-          - snmpd
-          - x11vnc
-          - ntp
-          - ntpdate
-          - nedit
-          - python-pip
-          - pavucontrol
-          - unity-lens-applications
-          - unity-control-center
-          - python-yaml
-          - firefox
-          - mediainfo
+  apt:
+    pkg:
+      - ssh
+      - nano
+      - snmp
+      - snmpd
+      - x11vnc
+      - ntp
+      - ntpdate
+      - nedit
+      - python-pip
+      - pavucontrol
+      - unity-lens-applications
+      - unity-control-center
+      - python-yaml
+      - firefox
+      - mediainfo
+    state: present
   tags:
-          - system
-          - vnc
-          - ntp
-          - unity
+    - system
+    - vnc
+    - ntp
+    - unity
 
 - name: "Install specific system security updates"
-  apt: >
-          pkg={{ item }}
-          state=latest
-  with_items:
-          - openssl
-          - libssl1.0.0
+  apt:
+    pkg:
+      - openssl
+      - libssl1.0.0
+    state: latest
 
 ## APT PKG REMOVAL
 
 - name: "Remove packages"
-  apt: >
-          pkg={{ item }}
-          state=absent
-  with_items:
-          - avahi-daemon
-          - cups
-          - chromium-browser
-          - bluez
+  apt:
+    pkg:
+      - avahi-daemon
+      - cups
+      - chromium-browser
+      - bluez
+    state: absent
   tags:
-          - avahi
-          - network
-          - desktop
-          - apt_remove
-          - disable_bluetooth
+    - avahi
+    - network
+    - desktop
+    - apt_remove
+    - disable_bluetooth
 
 - name: "Setup remote login"
-  copy: >
-          src=root/_ssh/{{ item }}
-          dest=/root/.ssh/{{ item }}
-          mode=600
+  copy:
+    src: root/_ssh/{{ item }}
+    dest: /root/.ssh/{{ item }}
+    mode: "0600"
   with_items:
-          - config
-          - known_hosts
-  tags:   remote
+    - config
+    - known_hosts
+  tags: remote
 
 - name: "Generate system config folders"
-  file: >
-          path=/etc/{{ item }}
-          state=directory
-          recurse=yes
+  file:
+    path: /etc/{{ item }}
+    state: directory
+    recurse: yes
   with_items:
-          - logrotate.d
-          - ntp/crypto
+    - logrotate.d
+    - ntp/crypto
   tags:
-          - apache
-          - ntp
+    - apache
+    - ntp
 
 - name: "Copy NTP config files"
-  copy: >
-          src=etc/{{ item }}
-          dest=/etc/{{ item }}
+  copy:
+    src: etc/{{ item }}
+    dest: /etc/{{ item }}
   with_items:
-          - ntp.conf
-          - ntp/crypto/pw
-          - ntp/step-tickers
-          - ntp/keys
+    - ntp.conf
+    - ntp/crypto/pw
+    - ntp/step-tickers
+    - ntp/keys
   tags:
     - ntp
 
 - name: "Setup CA name"
-  template: >
-          src=ca_name
-          dest=/etc/ca_name
-  tags:   ca_config
+  template:
+    src: ca_name
+    dest: /etc/ca_name
+  tags: ca_config
 
 - name: "Setup automatic login"
-  template: >
-          src=lightdm.j2
-          dest=/etc/lightdm/lightdm.conf
-  tags:   ca_config
+  template:
+    src: lightdm.j2
+    dest: /etc/lightdm/lightdm.conf
+  tags: ca_config
 
 - name: "Copy Xorg config files"
-  copy: >
-          src=etc/X11/{{ item }}
-          dest=/etc/X11/{{ item }}
+  copy:
+    src: etc/X11/{{ item }}
+    dest: /etc/X11/{{ item }}
   with_items:
-          - xorg.conf
+    - xorg.conf
   when: motherboard.stdout == "Z97-PRO GAMER" or motherboard.stdout == '8053'
   tags:
-          - ca_config
-          - xorg
+    - ca_config
+    - xorg
 
 ## VNC
 
@@ -262,67 +266,43 @@
   file:
     path: /home/{{ ca_username }}/.vnc
     state: directory
-  tags:
-          - vnc
+  tags: vnc
 
 - name: vnc - setup x11vnc password
-  shell: x11vnc -storepasswd {{ ca_vnc_password }} /home/{{ ca_username }}/.vnc/passwd
+  shell: "x11vnc -storepasswd {{ ca_vnc_password }} /home/{{ ca_username }}/.vnc/passwd"
   args:
-    creates: /home/{{ ca_username }}/.vnc/passwd
-  tags:
-          - vnc
+    creates: "/home/{{ ca_username }}/.vnc/passwd"
+  tags: vnc
 
 - name: vnc - change permissions of x11vnc password file
   file:
     path: /home/{{ ca_username }}/.vnc/passwd
     owner: "{{ ca_username }}"
     group: "{{ ca_username }}"
-    mode: 0644
-  tags:
-          - vnc
+    mode: "0644"
+  tags: vnc
 
 - name: vnc - setup vnc systemd service
   template:
     src: x11vnc.j2
     dest: /lib/systemd/system/x11vnc.service
   register: vnc_change
-  tags:
-          - vnc
+  tags: vnc
 
 - name: vnc - enable x11vnc service
-  systemd: >
-            enabled=yes
-            daemon_reload=yes
-            name=x11vnc.service
+  systemd:
+    enabled: yes
+    daemon_reload: yes
+    name: x11vnc.service
   when: vnc_change.changed
-  tags:
-          - vnc
+  tags: vnc
 
 - name: vnc - start x11vnc service
-  systemd: >
-            state=restarted
-            name=x11vnc.service
+  systemd:
+    state: restarted
+    name: x11vnc.service
   when: vnc_change.changed and ansible_connection != "local"
-  tags:
-          - vnc
-# old way to do systemd
-# - name: vnc - reload systemd
-#   shell: systemctl daemon-reload
-#   when: vnc_change.changed
-#   tags:
-#           - vnc
-#
-# - name: vnc - start x11vnc service
-#   shell: systemctl start x11vnc
-#   when: vnc_change.changed
-#   tags:
-#           - vnc
-#
-# - name: vnc - enable x11vnc service on boot
-#   shell: systemctl enable x11vnc
-#   when: vnc_change.changed
-#   tags:
-#           - vnc
+  tags: vnc
 
 ## UNITY DESKTOP
 
@@ -331,503 +311,486 @@
 ## BLUETOOTH
 
 - name: "Stop Bluetooth Service"
-  systemd: >
-            enabled=no
-            masked=yes
-            daemon_reload=yes
-            name=bluetooth.service
+  systemd:
+    enabled: no
+    masked: yes
+    daemon_reload: yes
+    name: bluetooth.service
   ignore_errors: yes
   register: bluetooth
-  tags:   disable_bluetooth
+  tags: disable_bluetooth
 
 - name: "Remove Bluetooth Startup links"
-  shell: >
-          update-rc.d bluetooth remove
+  shell: update-rc.d bluetooth remove
   # when:   bluetooth.changed
-  tags:   disable_bluetooth
+  tags: disable_bluetooth
 
 - name: "Disable bluetooth in rc.local"
-  lineinfile: >
-          dest=/etc/rc.local
-          insertbefore="exit 0"
-          regexp="rfkill block bluetooth"
-          line="rfkill block bluetooth"
+  lineinfile:
+    dest: /etc/rc.local
+    insertbefore: "exit 0"
+    regexp: "rfkill block bluetooth"
+    line: "rfkill block bluetooth"
+    create: yes
   tags:
-          - scripts
-          - disable_bluetooth
-
-## NETWORKING
-# NOT NEEDED, ntwork manager auto sets this anyway
-# - name: "Setup DHCP Network Interfaces"
-#   template: >
-#           src=interfaces-dhcp.j2
-#           dest=/etc/network/interfaces
-#           backup=yes
-#   register: networkmgmt
-#   tags:
-#           - network
-#           - interfaces
-#
-# - name: "Restart Networking"
-#   service: >
-#           name=network-manager
-#           state=restarted
-#   when: networkmgmt.changed
-#   tags:
-#           - network
-#           - interfaces
+    - scripts
+    - disable_bluetooth
 
 - name: "Setup /etc/hostname"
-  template: >
-          src=hostname
-          dest=/etc/hostname
-  tags:   network
+  template:
+    src: hostname
+    dest: /etc/hostname
+  tags: network
 
 - name: "Setup /etc/hosts"
-  template: >
-          src=hosts.j2
-          dest=/etc/hosts
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
   tags: network
 
 - name: "Setup /etc/hosts.allow"
-  template: >
-          src=hosts.allow.j2
-          dest=/etc/hosts.allow
+  template:
+    src: hosts.allow.j2
+    dest: /etc/hosts.allow
   tags: network
 
 - name: "Setup /etc/hosts.deny"
-  template: >
-          src=hosts.deny.j2
-          dest=/etc/hosts.deny
+  template:
+    src: hosts.deny.j2
+    dest: /etc/hosts.deny
   tags: network
 
 ## BOOT TIME
 
 - name: "FSCK non-interactive if ran"
-  lineinfile: >
-          dest=/etc/default/rcS
-          regexp="^FSCKFIX="
-          line="FSCKFIX=yes"
+  lineinfile:
+    dest: /etc/default/rcS
+    regexp: "^FSCKFIX="
+    line: "FSCKFIX=yes"
+    create: yes
   tags:
-          - grub
-          - boot
+    - grub
+    - boot
 
 - name: "continue normal boot on hdd error"
-  replace: >
-          dest=/etc/fstab
-          regexp="errors=remount-ro"
-          replace="errors=continue"
+  replace:
+    dest: /etc/fstab
+    regexp: "errors=remount-ro"
+    replace: "errors=continue"
   tags:
-          - grub
-          - boot
+    - grub
+    - boot
 
 ## GRUB
 
 - name: "Configure GRUB timeout"
-  lineinfile: >
-          dest=/etc/default/grub
-          regexp="GRUB_TIMEOUT=*"
-          line="GRUB_TIMEOUT=1"
+  lineinfile:
+    dest: /etc/default/grub
+    regexp: "GRUB_TIMEOUT=*"
+    line: "GRUB_TIMEOUT=1"
   register: grub_change
-  tags:   grub
+  tags: grub
 
 - name: "Configure GRUB fail timeout"
-  lineinfile: >
-          dest=/etc/default/grub
-          insertafter=EOF
-          line="GRUB_RECORDFAIL_TIMEOUT=2"
+  lineinfile:
+    dest: /etc/default/grub
+    insertafter: EOF
+    line: "GRUB_RECORDFAIL_TIMEOUT=2"
   register: grub_change
-  tags:   grub
+  tags: grub
 
 - name: "Configure GRUB boot with no splash"
-  lineinfile: >
-          dest=/etc/default/grub
-          regexp="GRUB_CMDLINE_LINUX_DEFAULT=*"
-          line='GRUB_CMDLINE_LINUX_DEFAULT=""'
+  lineinfile:
+    dest: /etc/default/grub
+    regexp: "GRUB_CMDLINE_LINUX_DEFAULT=*"
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT=""'
   register: grub_change
-  tags:   grub
+  tags: grub
 
 - name: "Update GRUB"
-  shell: >
-          /usr/sbin/update-grub > /tmp/grub-update
-          creates=/tmp/grub-update
-  when:   grub_change.changed
-  tags:   grub
+  shell: /usr/sbin/update-grub > /tmp/grub-update
+  args:
+    creates: /tmp/grub-update
+  when: grub_change.changed
+  tags: grub
 
 ## UBUNTU NOTIFICATIONS
 
-- name: "Surpress error popups"
-  lineinfile: >
-          dest=/etc/default/apport
-          regexp="enabled=*"
-          line="enabled=0"
-  tags:   updates_silent
+- name: "Suppress error popups"
+  lineinfile:
+    dest: /etc/default/apport
+    regexp: "enabled=*"
+    line: "enabled=0"
+  tags: updates_silent
 
-- name: "Surpress update popups"
-  lineinfile: >
-          dest=/etc/xdg/autostart/update-notifier.desktop
-          regexp="NoDisplay=*"
-          line="NoDisplay=false"
-  tags:   updates_silent
+- name: "Suppress update popups"
+  lineinfile:
+    dest: /etc/xdg/autostart/update-notifier.desktop
+    regexp: "NoDisplay=*"
+    line: "NoDisplay=false"
+  tags: updates_silent
 
-- name: "Surpress further updates popups"
-  lineinfile: >
-          dest=/etc/xdg/autostart/update-notifier.desktop
-          regexp="X-GNOME-Autostart-Delay=*"
-          line="X-GNOME-Autostart-Delay=false"
-  tags:   updates_silent
+- name: "Suppress further updates popups"
+  lineinfile:
+    dest: /etc/xdg/autostart/update-notifier.desktop
+    regexp: "X-GNOME-Autostart-Delay=*"
+    line: "X-GNOME-Autostart-Delay=false"
+  tags: updates_silent
 
-- name: "Surpress new release popups"
-  lineinfile: >
-          dest=/etc/update-manager/release-upgrades
-          regexp="Prompt=*"
-          line="Prompt=never"
-  tags:   updates_silent
+- name: "Suppress new release popups"
+  lineinfile:
+    dest: /etc/update-manager/release-upgrades
+    regexp: "Prompt=*"
+    line: "Prompt=never"
+  tags: updates_silent
 
 ## TIMER SERVERS
 
 - name: "Stop ntp"
-  service: >
-          name=ntp
-          state=stopped
-  tags:   update_ntp
+  service:
+    name: ntp
+    state: stopped
+  tags: update_ntp
 
 - name: Set timezone to Europe/London
-  command: >
-          /usr/bin/timedatectl set-timezone "Europe/London"
+  command: /usr/bin/timedatectl set-timezone "Europe/London"
   tags:
-        - ntp
-        - update_ntp
+    - ntp
+    - update_ntp
 
 - name: "Set local time by ntpdate"
-  command: >
-          /usr/sbin/ntpdate -s "{{ ntp_server }}"
+  command: /usr/sbin/ntpdate -s "{{ ntp_server }}"
   tags:
-        - ntp
-        - update_ntp
+    - ntp
+    - update_ntp
 
 - name: "Start ntp"
-  service: >
-          name=ntp
-          state=started
-  tags:   update_ntp
+  service:
+    name: ntp
+    state: started
+  tags: update_ntp
 
 ## IPTABLES
 
 - name: "Make ferm dir"
-  file: >
-          path=/etc/ferm
-          state=directory
-  tags:  iptables
+  file:
+    path: /etc/ferm
+    state: directory
+  tags: iptables
 
 - name: "Configure ferm Iptables rules config"
-  template: >
-          src=ferm.j2
-          dest=/etc/ferm/ferm.conf
+  template:
+    src: ferm.j2
+    dest: /etc/ferm/ferm.conf
   register: ferm
-  tags:   iptables
+  tags: iptables
 
 - name: "Install ferm Iptables config tool"
-  apt: >
-          pkg=ferm
-          state=latest
-          dpkg_options='force-confold,force-confdef'
+  apt:
+    pkg: ferm
+    state: latest
+    dpkg_options: 'force-confold,force-confdef'
   register: ferm
-  tags:  iptables
+  tags: iptables
 
 - name: "reload ferm"
-  service: >
-         name=ferm
-         state=reloaded
-  when:  ferm.changed
-  tags:  iptables
+  service:
+    name: ferm
+    state: reloaded
+  when: ferm.changed
+  tags: iptables
 
-## NAGIOS
+## NAGIOS (limit to 16.04 - missing packages in 18.04)
 
 - name: "Install packages required by nagios-nrpe"
-  apt: >
-          pkg={{ item }}
-          state=present
-  with_items:
-          - nagios-nrpe-server
-          - nagios-plugins
-          - libnagios-plugin-perl
-  tags:   nagios
+  apt:
+    pkg:
+      - nagios-nrpe-server
+      - nagios-plugins
+      - libnagios-plugin-perl
+    state: present
+  when: ansible_distribution_version == '16.04'
+  tags: nagios
 
 - name: "Configure nagios-nrpe-server"
-  template: >
-          src=nrpe.j2
-          dest=/etc/nagios/nrpe.cfg
+  template:
+    src: nrpe.j2
+    dest: /etc/nagios/nrpe.cfg
+  when: ansible_distribution_version == '16.04'
   tags:
-          - nagios
-          - nagios_config
+    - nagios
+    - nagios_config
 
 - name: "Copy custom nagios plugins to nagios dir"
-  copy: >
-          src={{ item }}
-          dest=/usr/lib/nagios/plugins/
-          mode=0755
+  copy:
+    src: "{{ item }}"
+    dest: /usr/lib/nagios/plugins/
+    mode: "0755"
   with_items:
-          - check_mic
-          - check_blinkstick
-          - check_linux_stats.pl
-          - check_low_load
+    - check_mic
+    - check_blinkstick
+    - check_linux_stats.pl
+    - check_low_load
+  when: ansible_distribution_version == '16.04'
   tags:
-          - nagios
-          - nagios_plugins
+    - nagios
+    - nagios_plugins
 
 - name: "Install check_linux_stats dependancy libsys-statistics-linux-perl Package"
-  apt: >
-          pkg=libsys-statistics-linux-perl
-          state=latest
-          force=yes
+  apt:
+    pkg: libsys-statistics-linux-perl
+    state: latest
+    force: yes
+  when: ansible_distribution_version == '16.04'
   tags:
-          - nagios
-          - nagios_plugins
+    - nagios
+    - nagios_plugins
 
 - name: "Copy check_lm_sensors nagios plugin"
-  copy: >
-          src={{ item }}
-          dest=/usr/lib/nagios/plugins/
-          mode=0755
+  copy:
+    src: "{{ item }}"
+    dest: /usr/lib/nagios/plugins/
+    mode: "0755"
   with_items:
-          - check_lm_sensors
+    - check_lm_sensors
+  when: ansible_distribution_version == '16.04'
   tags:
-          - nagios
-          - nagios_plugins
-          - sensors
+    - nagios
+    - nagios_plugins
+    - sensors
 
 - name: "Install lm-sensors Package"
-  apt: >
-          pkg=lm-sensors
-          state=latest
-          force=yes
+  apt:
+    pkg: lm-sensors
+    state: latest
+    force: yes
   register: sensor_change
+  when: ansible_distribution_version == '16.04'
   tags:
-          - nagios
-          - sensors
+    - nagios
+    - sensors
 
 - name: "Run lm-sensors auto-conf"
-  shell: >
-          /usr/sbin/sensors-detect --auto;
-  when: sensor_change.changed
+  shell: /usr/sbin/sensors-detect --auto;
+  when:
+    - sensor_change.changed
+    - ansible_distribution_version == '16.04'
   tags:
-          - nagios
-          - sensors
+    - nagios
+    - sensors
 
 - name: "Add kernel module coretemp for lm-sensors"
-  lineinfile: >
-          dest=/etc/modules
-          line="coretemp"
-          state=present
-          insertafter=EOF
-          regexp='^coretemp?'
-  when: legacy
+  lineinfile:
+    dest: /etc/modules
+    line: "coretemp"
+    state: present
+    insertafter: EOF
+    regexp: '^coretemp?'
+  when:
+    - legacy
+    - ansible_distribution_version == '16.04'
   tags:
-          - nagios
-          - sensors
+    - nagios
+    - sensors
 
 - name: "Add kernel module it87 for lm-sensors"
-  lineinfile: >
-          dest=/etc/modules
-          line="it87"
-          state=present
-          insertafter=EOF
-          regexp='^it87?'
-  when: legacy
+  lineinfile:
+    dest: /etc/modules
+    line: "it87"
+    state: present
+    insertafter: EOF
+    regexp: '^it87?'
+  when:
+    - legacy
+    - ansible_distribution_version == '16.04'
   tags:
-          - nagios
-          - sensors
+    - nagios
+    - sensors
 
 - name: "Restart kernel modules"
-  service: >
-          name=module-init-tools
-          state=restarted
-  when: legacy and sensor_change.changed
+  service:
+    name: module-init-tools
+    state: restarted
+  when:
+    - legacy
+    - sensor_change.changed
+    - ansible_distribution_version == '16.04'
   tags:
-          - nagios
-          - sensors
+    - nagios
+    - sensors
 
 - name: "Restart nagios-nrpe"
-  service: >
-          name=nagios-nrpe-server
-          state=restarted
+  service:
+    name: nagios-nrpe-server
+    state: restarted
+  when: ansible_distribution_version == '16.04'
   tags:
-          - nagios
-          - nagios_config
+    - nagios
+    - nagios_config
 
 ## CA
 
 - name: "Copy CA scripts"
-  copy: >
-          src=usr/{{ item }}
-          dest=/usr/{{ item }}
-          mode=755
+  copy:
+    src: usr/{{ item }}
+    dest: /usr/{{ item }}
+    mode: "0755"
   with_items:
-          - local/bin/1st-run
-          - local/bin/checknetwork
-          - local/bin/rtcwake
-          - local/bin/check_load
+    - local/bin/1st-run
+    - local/bin/checknetwork
+    - local/bin/rtcwake
+    - local/bin/check_load
   tags:
-          - scripts
-          - updates_silent
-          - checknet
-          - rtcwake
-          - checkload
+    - scripts
+    - updates_silent
+    - checknet
+    - rtcwake
+    - checkload
 
 - name: "Copy CA unity-compiz settings"
-  copy: >
-          src={{ item }}
-          dest=/tmp/{{ item }}
-          mode=755
+  copy:
+    src: "{{ item }}"
+    dest: "/tmp/{{ item }}"
+    mode: "0755"
   with_items:
-          - dconf-compiz-unity-settings.ini
+    - dconf-compiz-unity-settings.ini
   tags:
-          - scripts
-          - updates_silent
-          - gsettings
+    - scripts
+    - updates_silent
+    - gsettings
 
 - name: scripts - create www directory for hotplug callback
   file:
     path: /var/www
     state: directory
   tags:
-          - scripts
+    - scripts
 
 - name: "Copy USB hotplug callback"
-  template: >
-          src=hotplug_callback.j2
-          dest=/usr/local/bin/hotplug_callback
-          mode=755
+  template:
+    src: hotplug_callback.j2
+    dest: /usr/local/bin/hotplug_callback
+    mode: "0755"
   tags:
-          - scripts
+    - scripts
 
 - name: "Setup USB hotplug callback in rc.local"
-  lineinfile: >
-          dest=/etc/rc.local
-          insertbefore="exit 0"
-          regexp="echo \"/usr/local/bin/hotplug_callback\" >/proc/sys/kernel/hotplug"
-          line="echo \"/usr/local/bin/hotplug_callback\" >/proc/sys/kernel/hotplug"
+  lineinfile:
+    dest: /etc/rc.local
+    insertbefore: "exit 0"
+    regexp: "echo \"/usr/local/bin/hotplug_callback\" >/proc/sys/kernel/hotplug"
+    line: "echo \"/usr/local/bin/hotplug_callback\" >/proc/sys/kernel/hotplug"
   tags:
-          - scripts
+    - scripts
 
 - name: "Create CA user's directories"
-  file: >
-          path={{ item }}
-          owner={{ ca_username }}
-          group={{ ca_username }}
-          state=directory
-          recurse=yes
+  file:
+    path: "{{ item }}"
+    owner: "{{ ca_username }}"
+    group: "{{ ca_username }}"
+    state: directory
+    recurse: yes
   with_items:
-          - /home/{{ ca_username }}/.config/autostart
-          - /home/{{ ca_username }}/.ssh
+    - /home/{{ ca_username }}/.config/autostart
+    - /home/{{ ca_username }}/.ssh
   tags:
-          - ca_config
+    - ca_config
 
 - name: "Config CA user's SSH"
-  copy: >
-          src=_ssh/authorized_keys
-          dest=/home/{{ ca_username }}/.ssh/authorized_keys
-          owner={{ ca_username }}
-          group={{ ca_username }}
-          mode=600
+  copy:
+    src: _ssh/authorized_keys
+    dest: /home/{{ ca_username }}/.ssh/authorized_keys
+    owner: "{{ ca_username }}"
+    group: "{{ ca_username }}"
+    mode: "0600"
 
 - name: "Config CA user's SSH hosts checking"
-  copy: >
-          src=_ssh/config
-          dest=/home/{{ ca_username }}/.ssh/config
-          owner={{ ca_username }}
-          group={{ ca_username }}
-          mode=644
+  copy:
+    src: _ssh/config
+    dest: /home/{{ ca_username }}/.ssh/config
+    owner: "{{ ca_username }}"
+    group: "{{ ca_username }}"
+    mode: "0644"
 
 - name: "Disable CA user's Screensaver"
-  copy: >
-          src=_xscreensaver
-          dest=/home/{{ ca_username }}/.xscreensaver
+  copy:
+    src: _xscreensaver
+    dest: "/home/{{ ca_username }}/.xscreensaver"
 
 - name: "Setup CA user's autostarts"
-  copy: >
-          src=_{{ item }}
-          dest=/home/{{ ca_username }}/.{{ item }}
-          owner={{ ca_username }}
-          group={{ ca_username }}
-          mode=0644
+  copy:
+    src: "_{{ item }}"
+    dest: "/home/{{ ca_username }}/.{{ item }}"
+    owner: "{{ ca_username }}"
+    group: "{{ ca_username }}"
+    mode: "0644"
   with_items:
-          - config/autostart/1st-run.desktop
-          - config/autostart/update-notifier.desktop
+    - config/autostart/1st-run.desktop
+    - config/autostart/update-notifier.desktop
   tags:
-          - autostart
+    - autostart
 
 ## CRONTAB
 
 - name: "Setup Sat reboot cron job"
-  cron: >
-          name="reboot"
-          user=root
-          minute="0"
-          hour="6"
-          day="1"
-          job="/sbin/reboot -f"
+  cron:
+    name: "reboot"
+    user: root
+    minute: "0"
+    hour: "6"
+    day: "1"
+    job: "/sbin/reboot -f"
   tags:
-          - cronjobs
+    - cronjobs
 
 - name: "Check network connection cron job"
-  cron: >
-          name="check network connection"
-          user=root
-          minute="0"
-          hour="2"
-          job="/usr/local/bin/checknetwork"
+  cron:
+    name: "check network connection"
+    user: root
+    minute: "0"
+    hour: "2"
+    job: "/usr/local/bin/checknetwork"
   tags:
-          - cronjobs
-          - checknet
+    - cronjobs
+    - checknet
 
 - name: "Set RTC wakeup alarm cron job"
-  cron: >
-          name="rtc wakeup"
-          user=root
-          minute="15"
-          hour="8"
-          job="/usr/local/bin/rtcwake"
+  cron:
+    name: "rtc wakeup"
+    user: root
+    minute: "15"
+    hour: "8"
+    job: "/usr/local/bin/rtcwake"
   tags:
-          - cronjobs
-          - rtcwake
+    - cronjobs
+    - rtcwake
 
 - name: "Check for high load job"
-  cron: >
-          name="checkload"
-          user=root
-          minute="*/2"
-          job="/usr/local/bin/check_load"
+  cron:
+    name: "checkload"
+    user: root
+    minute: "*/2"
+    job: "/usr/local/bin/check_load"
   tags:
-          - cronjobs
-          - rtcwake
-          - checkload
+    - cronjobs
+    - rtcwake
+    - checkload
 
 - name: "Set RTC wakeup alarm at reboot cron job"
-  cron: >
-          name="rtc wakeup reboot"
-          user=root
-          special_time=reboot
-          job="/usr/local/bin/rtcwake"
+  cron:
+    name: "rtc wakeup reboot"
+    user: root
+    special_time: reboot
+    job: "/usr/local/bin/rtcwake"
   tags:
-          - cronjobs
-          - rtcwake
-# In 16.04 TRIM *should* be handled by the OS
-# - name: "TRIM weekly cron job script"
-#   template: >
-#           src=fstrim.j2
-#           dest=/etc/cron.weekly/fstrim
-#           mode=755
-#   tags:
-#           - cronjobs
-#           - trim
-#           - scripts
+    - cronjobs
+    - rtcwake
+
 - name: "Configure passwordless reboot for ca user"
-  lineinfile: >
-          dest=/etc/sudoers
-          insertafter=EOF
-          line="{{ca_username}} ALL=(ALL) NOPASSWD: /sbin/reboot"
+  lineinfile:
+    dest: /etc/sudoers
+    insertafter: EOF
+    line: "{{ca_username}} ALL=(ALL) NOPASSWD: /sbin/reboot"
   tags:
-          - reboot
-          - users
+    - reboot
+    - users
