@@ -269,7 +269,7 @@
   tags: vnc
 
 - name: vnc - setup x11vnc password
-  shell: "x11vnc -storepasswd {{ ca_vnc_password }} /home/{{ ca_username }}/.vnc/passwd"
+  shell: 'x11vnc -storepasswd "{{ ca_vnc_password }}" /home/{{ ca_username }}/.vnc/passwd'
   args:
     creates: "/home/{{ ca_username }}/.vnc/passwd"
   tags: vnc

@@ -2,6 +2,5 @@ nbproject/
 *~
 *.retry
 .idea/
-group_vars/all
 __pycache__/
 *.pyc
