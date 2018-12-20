@@ -1,23 +1,15 @@
 ---
-
-# group_vars/all example file. this file should be encrypted for the obvious security problems. see ansible vault
+# group_vars/all example file.
 # some of these vars will not mean anything unless you run the associated service. In this case, leave as default
 
 # OS username
 ca_username: galicaster
 
 # Opencast credentials
-GC_matterhorn_host : admin.oc.example.com
-GC_staging_matterhorn_host : admin.ocstage.example.com
-GC_matterhorn_user : admin
-GC_staging_matterhorn_user : admin
-GC_staging_matterhorn_password : opencast
-GC_matterhorn_password : opencast
 GC_matterhorn_workflow : default
 
 # Wireless credentials
 eduroam_user: username@example.com
-eduroam_password: password
 
 # A home server for wifi agents to dial home to through an ssh tunnel
 home_server: home.oc.example.com
@@ -33,23 +25,12 @@ nagios_server_user: nagios
 peakaboo_meteor: wss://peakaboo.oc.example.ac.uk/websocket
 peakaboo_staging_meteor: wss://peakaboo.ocstage.example.ac.uk/websocket
 peakaboo_user: galicaster@example.com
-peakaboo_password: password
 peakaboo_http: https://peakaboo.oc.example.ac.uk
 peakaboo_staging_http: https://peakaboo.ocstage.example.ac.uk
 
 # proxy servers if used
 http_proxy_server: ''
 https_proxy_server: ''
-
-# Capture agent VNC password
-ca_vnc_password: !vault |
-  $ANSIBLE_VAULT;1.1;AES256
-  32343361383462623338316463653838336661326465393432326261346234643263336135333032
-  3536653038626333396534393462393137623238303431320a613637313038346237653033633438
-  34353834666230336662383734376439373632663934386534383033386335313131353135386236
-  3062306439303364340a346432653630613438353065623235633832623861356465376233643265
-  30663138306363626562356261373164333264326531396633306630393364373732663336656635
-  3231616266363765346661346138363231363765346534623633
 
 # debian and fileserver private repositories for storing driver, lecturesight source and other files
 deb_repo_hostname: false
@@ -60,13 +41,11 @@ ubuntu_iso: ubuntu-16-04-desktop-custom.iso
 
 # rtp camera settings
 rtp_user: admin
-rtp_pass: password
 rtp_default_ip: 192.168.0.90
 rtp_port: 554
 
 # ip camera onvif connectivity settings
 onvif_user: onvif
-onvif_pass: password
 
 # youtube live stream key for livestreaming
 youtube_stream_key: youtube-stream-key
