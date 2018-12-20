@@ -129,5 +129,5 @@ capture-agents-magewell
 capture-agents-axis
 capture-agents-v4l2
 
-[test:children]
+[prod:children]
 capture-agents
