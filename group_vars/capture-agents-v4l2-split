@@ -1,5 +1,4 @@
 ---
-
 GC_encoder: vaapipostproc ! vaapih264enc rate-control=cbr bitrate=2000
 GC_encoder_high: vaapipostproc ! vaapih264enc rate-control=cbr bitrate=6000
 
@@ -9,7 +8,7 @@ DP_width: 1280
 DP_height: 720
 DP_driver: False
 
-GC_profile: Dual v4l2 Split Audio
+GC_profile: Screen and Line In Audio
 
 GC_resolution: auto
 
