@@ -35,6 +35,13 @@
   ignore_errors: yes
   register: connected_webcam_mic
 
+- name: "Get Line In Source"
+  shell: pactl list sources | grep input.pci | grep Name | awk '{ print $2 }'
+  become: true
+  become_user: "{{ ca_username }}"
+  ignore_errors: yes
+  register: line_in_source
+
 # Custom PC. Note has multiple card readers so hd4 used
 - name: setting fact Large custom PC CA
   set_fact:
@@ -59,7 +66,6 @@
     isobootpart: "hd0,gpt3"
     mb: "{{ motherboard.stdout }}"
     cpu: "{{ cpu_model.stdout }}"
-    GC_line_in_source: default
     nagios_temp_sensor: '"Core 0"'
     GC_encoder: "x264enc quantizer=22 speed-preset=2"
     GC_encoder_high: "x264enc pass=5 quantizer=17 bitrate=5120"
@@ -75,7 +81,6 @@
     isobootpart: "hd0,gpt3"
     mb: "{{ motherboard.stdout }}"
     cpu: "{{ cpu_model.stdout }}"
-    GC_line_in_source: default
     nagios_temp_sensor: '"Core 0"'
     nagios_temp_warn: 85
     nagios_temp_crit: 91
@@ -102,7 +107,6 @@
     isobootpart: "hd0,gpt3"
     mb: "{{ motherboard.stdout }}"
     cpu: "{{ cpu_model.stdout }}"
-    GC_line_in_source: default
     nagios_temp_sensor: '"Core 0"'
     nagios_temp_warn: 85
     nagios_temp_crit: 91
@@ -121,6 +125,11 @@
     GC_usb_camera_mic_source: "{{ connected_webcam_mic.stdout }}"
     GC_failovermic_source: "{{ connected_webcam_mic.stdout }}"
   when: connected_webcam_mic.stdout != ''
+
+- name: setting facts for Line In Source
+  set_fact:
+    GC_line_in_source: "{{ line_in_source.stdout }}"
+  when: line_in_source.stdout != ''
 
 - name: "If Staging, Set Peakaboo Server"
   set_fact:
