@@ -129,7 +129,7 @@
 - name: setting facts for Line In Source
   set_fact:
     GC_line_in_source: "{{ line_in_source.stdout }}"
-  when: line_in_source.stdout != ''
+  when: line_in_source.stdout != '' and inventory_hostname in groups['capture-agents-v4l2-split']
 
 - name: "If Staging, Set Peakaboo Server"
   set_fact:
