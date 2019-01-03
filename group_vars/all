@@ -6,8 +6,6 @@
 ca_username: galicaster
 
 # Opencast credentials
-GC_matterhorn_user : admin
-GC_staging_matterhorn_user : admin
 GC_matterhorn_workflow : default
 
 # Wireless credentials
