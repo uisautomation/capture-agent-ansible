@@ -57,12 +57,12 @@ To be able to specify the host when running the ansible playbook it needs adding
 It needs to be added in the section relevant to the video/audio hardware in the device. Currently only the following are used:
 
 * **capture-agents-v4l2-split**
- * Proposed production
- * Single screen (slides/presentation)
- * Audio from 3.5mm jack
+   * Proposed production
+   * Single screen (slides/presentation)
+   * Audio from 3.5mm jack
 * **capture-agents-magewell-split**
- * Initial experimental
- * Magewell card installed
+   * Initial experimental
+   * Magewell card installed
 
 > _TODO: Add capture-agents-dual-v4l2-split for dual video presentation and presenter ?_
 
@@ -96,9 +96,10 @@ This will configure the PC to launch galicaster on boot.
 2. On the **System** tab set **When inactive for** to _Never_
 
 _(following only actually needed for PCs with screens attached, e.g. Norwich and testing)_
+
 3. On the **Display** tab:
- 1. Set **Display power management** to _Off_
- 2. Set **Blank after** to _Never_
+   1. Set **Display power management** to _Off_
+   2. Set **Blank after** to _Never_
 4. On **Security** tab set **Automatically lock the session** to _Never_
 
 ## Secrets
