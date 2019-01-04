@@ -54,7 +54,7 @@ The ``run-ansible-playbook.sh`` wrapper script pulls a Docker image with the cor
 via the following, specifying the appropriate hosts file and hostname:
 
 ```bash
-$ ./run-ansible-playbook.sh capture-agent.yml -i dev-hosts uis-capture-agent-42
+$ ./run-ansible-playbook.sh capture-agent.yml -i dev-hosts -l uis-capture-agent-42
 ```
 
 > NOTE: the ``run-ansible-playbook.sh`` wrapper will attempt to decrypt the
