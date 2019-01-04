@@ -2,6 +2,16 @@
 
 Ansible configuration management for Lecture Capture Captures Agents.
 
+## The Short Version ##
+
+Starting with a bare machine...
+1. [From bare machine to configurable host](#from-bare-machine-to-configurable-host)
+2. [Agent deployment keys](#agent-deployment-keys)
+3. [Updating hosts file](#updating-hosts-file)
+4. [Running ansible playbook](#running-ansible-playbook)
+
+...capture agent can now be seen in lecture capture backend (Opencast - Locations)
+
 ## From bare machine to configurable host ##
 
 1. Use [uisautomation/lecture-capture-agent-bootstrap](https://github.com/uisautomation/lecture-capture-agent-bootstrap) to build a netboot installer image
@@ -13,6 +23,7 @@ Ansible configuration management for Lecture Capture Captures Agents.
 7. Remove the USB stick and boot the PC
 8. The PC will automatically login as the `galicaster` user
 9. Take a note of the PC's IP address
+10. Configure [Power Management](#power-management) to prevent sleeping
 
 ## Configuring a host ##
 
@@ -41,9 +52,23 @@ $ ssh-add ~/.ssh/lecture-capture-deploy-main
 
 ### Updating hosts file ###
 
-To be able to specify the host when running the ansible playbook it needs adding to the appropriate hosts file for the environment (prod-hosts, test-hosts or dev-hosts). It needs to be added in the section relevant to the video/audio hardware in the device.
+To be able to specify the host when running the ansible playbook it needs adding to the appropriate hosts file for the environment (prod-hosts, test-hosts or dev-hosts).
+
+It needs to be added in the section relevant to the video/audio hardware in the device. Currently only the following are used:
+
+* **capture-agents-v4l2-split**
+ * Proposed production
+ * Single screen (slides/presentation)
+ * Audio from 3.5mm jack
+* **capture-agents-magewell-split**
+ * Initial experimental
+ * Magewell card installed
+
+> _TODO: Add capture-agents-dual-v4l2-split for dual video presentation and presenter ?_
 
 Copy a commented example in the hosts file, changing the IP address to that of the desired host. The hostname doesn't matter but needs to be unique and is specified when running the playbook.
+
+For example:
 ```
 [capture-agents-v4l2-split]
 uis-capture-agent-42 ansible_host=172.24.234.123 ansible_ssh_port=22
@@ -51,7 +76,7 @@ uis-capture-agent-42 ansible_host=172.24.234.123 ansible_ssh_port=22
 ### Running ansible playbook ###
 
 The ``run-ansible-playbook.sh`` wrapper script pulls a Docker image with the correct version of Ansible and uses it to run the playbook. Invoke it
-via the following, specifying the appropriate hosts file and hostname:
+via the following, specifying the appropriate hosts file and **limiting to the hostname**, e.g:
 
 ```bash
 $ ./run-ansible-playbook.sh capture-agent.yml -i dev-hosts -l uis-capture-agent-42
@@ -62,6 +87,19 @@ $ ./run-ansible-playbook.sh capture-agent.yml -i dev-hosts -l uis-capture-agent-
 > one of those able to decrypt this file, you cannot run the playbook.
 
 This will configure the PC to launch galicaster on boot.
+
+## Power management
+
+> TODO: make ansible do this. Possibly with xfce4-power-mananger and/or xset commands
+
+1. Open `xfce Power Manager` (Menu > Preferences > Power Manager)
+2. On the **System** tab set **When inactive for** to _Never_
+
+_(following only actually needed for PCs with screens attached, e.g. Norwich and testing)_
+3. On the **Display** tab:
+ 1. Set **Display power management** to _Off_
+ 2. Set **Blank after** to _Never_
+4. On **Security** tab set **Automatically lock the session** to _Never_
 
 ## Secrets
 
