@@ -1,5 +1,4 @@
 ---
-
 GC_encoder: vaapipostproc ! vaapih264enc rate-control=cbr bitrate=2000
 GC_encoder_high: vaapipostproc ! vaapih264enc rate-control=cbr bitrate=6000
 
@@ -9,7 +8,7 @@ DP_width: 1280
 DP_height: 720
 DP_driver: False
 
-GC_profile: Dual v4l2 Split Audio
+GC_profile: Screen and Line In Audio
 
 GC_resolution: auto
 
@@ -31,3 +30,22 @@ GC_checkaudiosource_check_recording: True
 CA_camctrl: False
 CA_vapixctrl: False
 camera_exists: False
+
+ansible_release_host: 127.0.0.1
+support_group: example-support
+home_tunnel_port: 22
+nagios_tunnel_port: null
+deploy_environment: staging
+name_mask: null
+ansible_failovermic: false
+CA_interactive: null
+oc_default_series: tests
+oc_default_email: null
+vl_public: false
+blinkstick: false
+vapix_inverted: true
+ptz_tilt_lock: false
+vl_private_ep_acl: false
+cam1_host: null
+cam2_host: null
+CA_interactive_role: example-role

@@ -29,3 +29,22 @@ GC_checkaudiosource_check_recording: False
 
 CA_camctrl: False
 camera_exists: True
+
+ansible_release_host: 127.0.0.1
+support_group: example-support
+home_tunnel_port: 22
+nagios_tunnel_port: null
+deploy_environment: staging
+name_mask: null
+ansible_failovermic: false
+CA_interactive: null
+oc_default_series: null
+oc_default_email: null
+vl_public: false
+blinkstick: false
+vapix_inverted: true
+ptz_tilt_lock: false
+vl_private_ep_acl: false
+cam1_host: 192.168.0.90
+cam2_host: null
+CA_interactive_role: example-role
