@@ -107,12 +107,6 @@ capture-agents-axis-muxed
 
 [capture-agents-magewell:children]
 capture-agents-magewell-split
-capture-agents-magewell-usb
-capture-agents-dual-magewell-split
-capture-agents-dual-magewell-usb
-capture-agents-magewell-axis-muxed
-capture-agents-magewell-axis-split
-capture-agents-magewell-axis-usb
 
 [capture-agents-v4l2:children]
 capture-agents-v4l2-x2-axis-muxed
