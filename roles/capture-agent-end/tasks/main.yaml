@@ -47,8 +47,7 @@
   shell: echo 'restarting after a change'
   when: blinkstick_udev.changed or ( kernel_update is defined and kernel_update.changed)
   notify:
-    - Restart host
-    - Short Wait for host to restart
+    - reboot
   tags:
           - soft_reboot
           - finalising
@@ -65,22 +64,6 @@
           - apt
           - apt_update
           - datapath
-
-- name: Restart host
-  shell: sleep 2 && shutdown -r now "Reboot triggered by Ansible"
-  async: 1
-  poll: 0
-  ignore_errors: true
-  when: ansible_connection != "local" and datapath_driver is defined and datapath_driver.changed
-
-- name: Short Wait for host to restart
-  when: datapath_driver is defined and datapath_driver.changed
-  local_action: >
-    wait_for
-    host={{ ansible_ssh_host }}
-    port={{ ansible_ssh_port }}
-    delay=90
-    timeout=800
 
 - name: Forced host reboot
   shell: sleep 2 && shutdown -r now "Reboot triggered by Ansible"

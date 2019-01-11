@@ -1,0 +1,4 @@
+# Allow enough time for a typical system to do a periodic fsck.
+reboot_timeout: 600
+# What hostname to poll (on port 22).
+reboot_wait_host: "{{ansible_host|default(ansible_fqdn)}}"

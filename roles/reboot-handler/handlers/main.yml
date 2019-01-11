@@ -1,0 +1,37 @@
+---
+# This slightly silly dance is to try to ensure that Ansible's SSH
+# connection closes cleanly before the reboot happens.  Without this,
+# Ansible often ends up believing that the host is unreachable, and no
+# amount of "meta: reset_connection" or "meta: clear_host_errors"
+# seems to cheer it up.
+- name: reboot
+  shell: sleep 2 && /sbin/shutdown -r now "Ansible system packages upgraded"
+  async: 1
+  poll: 0
+  listen: reboot
+
+- name: wait for reboot to start
+  become: no
+  listen: reboot
+  wait_for:
+    port: 22
+    host: "{{ reboot_wait_host }}"
+    state: stopped
+  delegate_to: localhost
+
+- name: wait for reboot to finish
+  become: no
+  listen: reboot
+  wait_for:
+    port: 22
+    host: "{{ reboot_wait_host }}"
+    timeout: "{{ reboot_timeout }}"
+  delegate_to: localhost
+
+# because wait succeeds before the server is completely ready
+- name: slop
+  become: no
+  listen: reboot
+  wait_for:
+    timeout: 20
+  delegate_to: localhost
