@@ -4,13 +4,14 @@ Ansible configuration management for Lecture Capture Captures Agents.
 
 ## The Short Version ##
 
-Starting with a bare machine...
+Starting with a bare machine ..
+
 1. [From bare machine to configurable host](#from-bare-machine-to-configurable-host)
 2. [Agent deployment keys](#agent-deployment-keys)
 3. [Updating hosts file](#updating-hosts-file)
 4. [Running ansible playbook](#running-ansible-playbook)
 
-...capture agent can now be seen in lecture capture backend (Opencast - Locations)
+.. capture agent can now be seen in lecture capture backend (Opencast - Locations)
 
 ## From bare machine to configurable host ##
 
@@ -87,6 +88,11 @@ $ ./run-ansible-playbook.sh capture-agent.yml -i dev-hosts -l uis-capture-agent-
 > one of those able to decrypt this file, you cannot run the playbook.
 
 This will configure the PC to launch galicaster on boot.
+
+[A known issue with this](https://github.com/uisautomation/lecture-capture-agent-ansible/issues/59)
+is that "Get Line In Source" task doesn't always resolve the line in source from `pactl list sources`.
+Re-running the playbook should resolve the line in source.
+Check the audio location set up in the galicaster profile to be something other than default.
 
 ## Power management
 
