@@ -1,0 +1,60 @@
+---
+
+- name: Assert that we're using Zypper or APT or Yum
+  assert:
+    that: ansible_pkg_mgr in ('zypper', 'apt', 'yum')
+
+- name: Import reboot-handler
+  import_role:
+    name: reboot-handler
+
+- name: Apply patches using Zypper
+  zypper:
+    name: '*'
+    state: latest
+    type: patch
+    # --with-interactive is necessary to get kernel patches applied.
+    extra_args: --with-interactive
+  # As of Ansible 2.4, the zypper module does not understand return code
+  # 102, indicating that a reboot is required.
+  register: zypper_result
+  failed_when: zypper_result.rc not in [0, 102]
+  # I'd like to do this, but zypper_result.changed isn't defined:
+  #changed_when: zypper_result.changed zypper_result.rc == 102
+  when: ansible_pkg_mgr == 'zypper'
+  tags:
+    - skip_ansible_lint
+  notify: reboot
+
+# Since changed_when above didn't work, this does the equivalent.
+- name: Reboot if Zypper asked for that.
+  debug:
+    var: "zypper_result.rc"
+  changed_when: zypper_result.rc == 102
+  when: ansible_pkg_mgr == 'zypper'
+  notify: reboot
+
+- name: Apply patches using APT
+  apt:
+    update_cache: yes
+    upgrade: dist
+  when: ansible_pkg_mgr == 'apt' and not ansible_check_mode
+  notify: reboot
+
+- name: Remove unused packages
+  apt:
+    autoremove: yes
+  when: ansible_pkg_mgr == 'apt' and not ansible_check_mode
+  # No "notify: reboot" because autoremove shouldn't need one.
+
+- name: Apply patches using YUM
+  yum:
+    name: '*'
+    state: latest
+  when: ansible_pkg_mgr == 'yum'
+  tags:
+    - skip_ansible_lint
+  notify: reboot
+
+- name: Flush handlers
+  meta: flush_handlers

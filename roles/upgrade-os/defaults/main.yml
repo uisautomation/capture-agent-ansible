@@ -1,0 +1,3 @@
+---
+# Allow enough time for a typical system to do a periodic fsck.
+reboot_timeout: 600
