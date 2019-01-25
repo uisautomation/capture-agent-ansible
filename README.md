@@ -129,3 +129,16 @@ The vault password is GPG encrypted with the team's keys and was generated via:
 ```bash
 $ pwgen -1 64 | gpg --encrypt --recipient automation@uis.cam.ac.uk --armor
 ```
+
+## Issue with agents time
+
+Currently the production agent aren't able (for whatever reason) to set themselves 
+to the correct time. Having the correct time is crucial for being able to schedule 
+events so a simple playbook has been included to update the agents to the correct 
+time. This playbook can be run as follows.
+
+```bash
+$ ./run-ansible-playbook.sh temp-set-date.yml -i prod-hosts
+```
+
+It is temporary and should be removed when the clock issue has been resolved.
