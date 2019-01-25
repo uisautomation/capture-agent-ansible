@@ -55,12 +55,19 @@
 [capture-agents-v4l2-usb]
 
 [capture-agents-v4l2-split]
+# UIS - 1N08
 naughty-pasteur-674     ansible_host=172.24.193.73  ansible_ssh_port=22
+# Sidgwick - Room 1
 ecstatic-jang-384       ansible_host=10.222.4.106   ansible_ssh_port=22
+# Sidgwick - Room 2
 crazy-bardeen-859       ansible_host=10.222.4.116   ansible_ssh_port=22
+# Sidgwick - Room 3
 infallible-hodgkin-901  ansible_host=10.222.4.126   ansible_ssh_port=22
+# Sidgwick - Room 4
 naughty-hawking-237     ansible_host=10.222.4.136   ansible_ssh_port=22
+# Sidgwick - Room 5
 boring-haslett-515      ansible_host=10.222.4.146   ansible_ssh_port=22
+# Sidgwick - Room 6
 happy-clarke-812        ansible_host=10.222.4.156   ansible_ssh_port=22
 
 [capture-agents-blackmagic-split:children]
