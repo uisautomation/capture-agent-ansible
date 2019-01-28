@@ -1,5 +1,10 @@
 # DDP galicaster plugin
 #
+# Source:
+#   github SussexLearningSystems/peakaboo
+#   /docs/capture_agent_plugins/examples/galicaster_2_manchester/ddp.py
+#   Commit: 484abe9
+#
 # Copyright (c) 2016 University of Sussex
 #
 # Permission is hereby granted, free of charge, to any person obtaining
