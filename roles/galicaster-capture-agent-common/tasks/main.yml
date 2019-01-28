@@ -385,3 +385,17 @@
     - galicaster
     - galicaster_install
     - galicaster_plugins
+
+- name: Install Galicaster DDP (peakaboo) plugin
+  copy:
+    src: ddp.py
+    dest: /opt/galicaster/galicaster/plugins/ddp.py
+    owner: galicaster
+    group: galicaster
+    mode: "0644"
+  tags:
+    - galicaster
+    - galicaster_install
+    - galicaster_plugins
+    - peakaboo
+    - ddp
