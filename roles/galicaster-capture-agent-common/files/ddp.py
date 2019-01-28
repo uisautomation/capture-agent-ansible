@@ -25,11 +25,11 @@
 import cStringIO
 import requests
 # import socket
-from threading import Event, Thread
+from threading import Thread
 import time
 import uuid
 
-from gi.repository import Gtk, Gdk, GObject, Pango, GdkPixbuf
+from gi.repository import Gdk
 from MeteorClient import MeteorClient
 import pyscreenshot as ImageGrab
 from PIL import Image
@@ -216,7 +216,7 @@ class DDP(Thread):
             try:
                 # used if screenshot already exists
                 im = Image.open(self.screenshot_file)
-            except IOError as e:
+            except IOError:
                 logger.warn("Unable to open screenshot file {0}".format(self.screenshot_file))
                 return
         output = cStringIO.StringIO()
@@ -228,7 +228,7 @@ class DDP(Thread):
 
         if im.mode != "RGB":
             im = im.convert("RGB")
-        im.save(output, format=image_format) # to reduce jpeg size use param: optimize=True
+        im.save(output, format=image_format)  # to reduce jpeg size use param: optimize=True
         files['galicaster'] = ('galicaster.jpg', output.getvalue(),
                                'image/jpeg')
         try:
@@ -236,7 +236,7 @@ class DDP(Thread):
             requests.post(
                 "%s/image/%s" %
                 (self._http_host, self.id), files=files, auth=(
-                    self._user, self._password)) # to ignore ssl verification, use param: verify=False
+                    self._user, self._password))  # to ignore ssl verification, use param: verify=False
         except Exception:
             logger.warn('Unable to post images')
 
@@ -279,7 +279,7 @@ class DDP(Thread):
         duration = mp.getDuration()
         line["duration"] = long(duration / 1000) if duration else None
         # FIXME Does series_title need sanitising as well as duration?
-        created = mp.getDate()
+        # created = mp.getDate()
         # line["created"] = calendar.timegm(created.utctimetuple())
         for key, value in mp.metadata_series.iteritems():
             line["series_" + key] = value
@@ -386,17 +386,16 @@ class DDP(Thread):
             self.paused = False
             context.get('recorder').resume()
 
-
     def set_recording(self, me):
         self.recording = me['recording']
         if self.recording:
             # FIXME: Metadata isn't passed to recorder
-            meta = me.get('currentMediaPackage', {}) or {}
-            profile = me.get('currentProfile', 'nocam')
-            series = (meta.get('series_title', ''), meta.get('isPartOf', ''))
-            user = {'user_name': meta.get('creator', ''),
-                    'user_id': meta.get('rightsHolder', '')}
-            title = meta.get('title', 'Unknown')
+            # meta = me.get('currentMediaPackage', {}) or {}
+            # profile = me.get('currentProfile', 'nocam')
+            # series = (meta.get('series_title', ''), meta.get('isPartOf', ''))
+            # user = {'user_name': meta.get('creator', ''),
+            #         'user_id': meta.get('rightsHolder', '')}
+            # title = meta.get('title', 'Unknown')
             context.get('recorder').record()
         else:
             context.get('recorder').stop()
@@ -423,4 +422,4 @@ class DDP(Thread):
         logger.error('Disconnected from Meteor: err %d - %s' % (code, reason))
 
     def subscribedTo(self, publication):
-        return self.client.subscriptions.get(publication) != None
+        return self.client.subscriptions.get(publication) is not None
