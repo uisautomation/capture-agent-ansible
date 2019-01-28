@@ -131,17 +131,6 @@
     GC_line_in_source: "{{ line_in_source.stdout }}"
   when: line_in_source.stdout != '' and inventory_hostname in groups['capture-agents-v4l2-split']
 
-- name: "If Staging, Set Peakaboo Server"
-  set_fact:
-    peakaboo_meteor: "{{ peakaboo_staging_meteor }}"
-    peakaboo_http: "{{ peakaboo_staging_http }}"
-  when: deploy_environment is defined and deploy_environment == 'staging'
-  tags:
-          - galicaster
-          - galicaster_config
-          - peakaboo
-          - ddp
-
 - name: setting user interactive facts
   set_fact:
     workflow_params: 'archiveOp:true;publishHarvesting:true;trimHold:{{oc_trim_default | lower}};emailAddresses:{{ oc_default_email }};videoPreview:true;usePublicStore:{{ vl_public }}'
