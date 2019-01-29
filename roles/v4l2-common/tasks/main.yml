@@ -30,3 +30,9 @@
     - galicaster_config
     - galicaster_profiles
     - v4l_devices
+
+- name: "Set the line in source port for 'Stereo Input For Microphone'"
+  shell: pactl --server={{ pa_server_name }} set-source-port {{ GC_line_in_source }} analog-input-headphone-mic
+  become: true
+  become_user: "{{ ca_username }}"
+  tags: pactl_set_source_port
