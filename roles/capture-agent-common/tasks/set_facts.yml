@@ -36,11 +36,15 @@
   register: connected_webcam_mic
 
 - name: "Get Line In Source"
-  shell: pactl list sources | grep input.pci | grep Name | awk '{ print $2 }'
+  shell: pactl --server=unix:/run/user/$(id -u {{ ca_username }})/pulse/native list sources | grep input.pci | grep Name | awk '{ print $2 }'
   become: true
   become_user: "{{ ca_username }}"
   ignore_errors: yes
   register: line_in_source
+  tags: line_in_source
+
+- debug: msg="{{ line_in_source }}"
+  tags: line_in_source
 
 # Custom PC. Note has multiple card readers so hd4 used
 - name: setting fact Large custom PC CA
