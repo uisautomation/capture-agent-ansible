@@ -359,6 +359,7 @@
     repo: "{{ GC_repo }}"
     dest: /opt/galicaster
     version: "{{ GC_version }}"
+    force: yes
   become: yes
   become_user: "{{ ca_username }}"
   tags:
