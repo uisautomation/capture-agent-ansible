@@ -36,7 +36,7 @@
   register: connected_webcam_mic
 
 - name: "Get Line In Source"
-  shell: pactl --server={{ pa_server_name }} list sources | grep input.pci | grep Name | awk '{ print $2 }'
+  shell: pactl --server=unix:/run/user/$(id -u {{ ca_username }})/pulse/native list sources | grep input.pci | grep Name | awk '{ print $2 }'
   become: true
   become_user: "{{ ca_username }}"
   ignore_errors: yes

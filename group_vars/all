@@ -49,6 +49,3 @@ onvif_user: onvif
 
 # youtube live stream key for livestreaming
 youtube_stream_key: youtube-stream-key
-
-# pulse audio server name
-pa_server_name: unix:/run/user/1000/pulse/native
