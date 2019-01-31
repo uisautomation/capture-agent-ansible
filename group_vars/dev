@@ -1,7 +1,7 @@
 ---
 # Opencast credentials
-GC_matterhorn_host : https://dev.swarm.lc.gcloud.automation.uis.cam.ac.uk
-GC_staging_matterhorn_host : https://dev.swarm.lc.gcloud.automation.uis.cam.ac.uk
+GC_matterhorn_host : https://dev.test-swarm.lc.gcloud.automation.uis.cam.ac.uk
+GC_staging_matterhorn_host : https://dev.test-swarm.lc.gcloud.automation.uis.cam.ac.uk
 
 # file name of the ubuntu iso to install when using the extra var 'reinstall_os=true'
 ubuntu_iso: ubuntu-16-04-desktop-custom.iso
