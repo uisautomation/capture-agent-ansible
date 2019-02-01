@@ -1,21 +1,18 @@
 ---
+GC_encoder: vaapih264enc
+GC_encoder_high: vaapih264enc
 
-GC_encoder: vaapipostproc ! vaapih264enc rate-control=cbr bitrate=2000
-GC_encoder_high: vaapipostproc ! vaapih264enc rate-control=cbr bitrate=6000
-
-DP_video_name_0: /dev/video0
-DP_video_name_1: /dev/video1
 v4l2_caps: image/jpeg,format=YUY2
-DP_framerate: 24/1
-DP_width: 1280
-DP_height: 720
+DP_framerate: 30/1
+DP_width: 1920
+DP_height: 1080
 DP_driver: False
 
-GC_profile: Screen
+GC_profile: Dual Screen/Camera and Line In Audio
 
 GC_resolution: auto
 
-GC_qrcode_ignore_track: camera
+#GC_qrcode_ignore_track: camera
 
 max_save_mp_days: 7
 
@@ -33,3 +30,22 @@ GC_checkaudiosource_check_recording: True
 CA_camctrl: False
 CA_vapixctrl: False
 camera_exists: False
+
+ansible_release_host: 127.0.0.1
+support_group: example-support
+home_tunnel_port: 22
+nagios_tunnel_port: null
+deploy_environment: staging
+name_mask: null
+ansible_failovermic: false
+CA_interactive: null
+oc_default_series: tests
+oc_default_email: null
+vl_public: false
+blinkstick: false
+vapix_inverted: true
+ptz_tilt_lock: false
+vl_private_ep_acl: false
+cam1_host: null
+cam2_host: null
+CA_interactive_role: example-role

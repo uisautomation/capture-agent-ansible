@@ -70,6 +70,9 @@ boring-haslett-515      ansible_host=10.222.4.146   ansible_ssh_port=22
 # Sidgwick Lecture Block - Room 6
 happy-clarke-812        ansible_host=10.222.4.156   ansible_ssh_port=22
 
+[capture-agents-dual-v4l2-split]
+#uis-capture-agent-42 ansible_host=172.24.193.212 ansible_ssh_port=22
+
 [capture-agents-blackmagic-split:children]
 capture-agents-blackmagic-split-wifi
 
@@ -124,6 +127,7 @@ capture-agents-magewell-split
 capture-agents-v4l2-x2-axis-muxed
 capture-agents-v4l2-usb
 capture-agents-v4l2-split
+capture-agents-dual-v4l2-split
 
 [capture-agents:children]
 capture-agents-blackmagic
