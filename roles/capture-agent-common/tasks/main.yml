@@ -162,7 +162,6 @@
       - snmp
       - snmpd
       - x11vnc
-      - ntp
       - ntpdate
       - nedit
       - python-pip
@@ -220,20 +219,14 @@
     recurse: yes
   with_items:
     - logrotate.d
-    - ntp/crypto
   tags:
     - apache
-    - ntp
 
-- name: "Copy NTP config files"
-  copy:
-    src: etc/{{ item }}
-    dest: /etc/{{ item }}
-  with_items:
-    - ntp.conf
-    - ntp/crypto/pw
-    - ntp/step-tickers
-    - ntp/keys
+- name: "Set NTP servers in timesyncd conf"
+  lineinfine:
+    dest: /etc/systemd/timesyncd.conf
+    regexp: "^#?NTP="
+    line: "NTP={{ ntp_server }}"
   tags:
     - ntp
 
@@ -446,29 +439,17 @@
 
 ## TIMER SERVERS
 
-- name: "Stop ntp"
-  service:
-    name: ntp
-    state: stopped
-  tags: update_ntp
-
 - name: Set timezone to Europe/London
   command: /usr/bin/timedatectl set-timezone "Europe/London"
   tags:
     - ntp
     - update_ntp
 
-- name: "Set local time by ntpdate"
-  command: /usr/sbin/ntpdate -s "{{ ntp_server }}"
+- name: Make sure timesyncd is enabled
+  command: /usr/bin/timedatectl set-ntp true
   tags:
     - ntp
     - update_ntp
-
-- name: "Start ntp"
-  service:
-    name: ntp
-    state: started
-  tags: update_ntp
 
 ## IPTABLES
 

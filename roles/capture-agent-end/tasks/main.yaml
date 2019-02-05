@@ -36,9 +36,7 @@
 - name:  Make sure time is correct
   shell: echo 'fix time after driver update'
   notify:
-    - Stop ntp
     - Set local time by ntpdate
-    - Start ntp
   tags:
           - hard_reboot
           - finalising
