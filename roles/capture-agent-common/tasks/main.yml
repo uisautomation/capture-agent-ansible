@@ -223,7 +223,7 @@
     - apache
 
 - name: "Set NTP servers in timesyncd conf"
-  lineinfine:
+  lineinfile:
     dest: /etc/systemd/timesyncd.conf
     regexp: "^#?NTP="
     line: "NTP={{ ntp_server }}"
