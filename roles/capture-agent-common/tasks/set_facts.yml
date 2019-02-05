@@ -133,7 +133,7 @@
 - name: setting facts for Line In Source
   set_fact:
     GC_line_in_source: "{{ line_in_source.stdout }}"
-  when: line_in_source.stdout != '' and inventory_hostname in groups['capture-agents-v4l2-split']
+  when: line_in_source.stdout != '' and (inventory_hostname in groups['capture-agents-v4l2-split'] or inventory_hostname in groups['capture-agents-dual-v4l2-split'])
 
 - name: setting user interactive facts
   set_fact:
