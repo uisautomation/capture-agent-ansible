@@ -4,8 +4,8 @@ GC_encoder_high: vaapih264enc
 
 v4l2_caps: image/jpeg,format=YUY2
 DP_framerate: 30/1
-DP_width: 1920
-DP_height: 1080
+DP_width: 1280
+DP_height: 720
 DP_driver: False
 
 GC_profile: Screen and Line In Audio
