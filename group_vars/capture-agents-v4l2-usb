@@ -4,7 +4,7 @@ GC_encoder: vaapipostproc ! vaapih264enc rate-control=cbr bitrate=2000
 GC_encoder_high: vaapipostproc ! vaapih264enc rate-control=cbr bitrate=6000
 
 v4l2_caps: image/jpeg,format=YUY2
-DP_framerate: 24/1
+DP_framerate: 30/1
 DP_width: 1280
 DP_height: 720
 DP_driver: False
