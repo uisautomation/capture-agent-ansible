@@ -359,6 +359,7 @@
     repo: "{{ GC_repo }}"
     dest: /opt/galicaster
     version: "{{ GC_version }}"
+    force: yes
   become: yes
   become_user: "{{ ca_username }}"
   tags:
@@ -385,3 +386,17 @@
     - galicaster
     - galicaster_install
     - galicaster_plugins
+
+- name: Install Galicaster DDP (peakaboo) plugin
+  copy:
+    src: ddp.py
+    dest: /opt/galicaster/galicaster/plugins/ddp.py
+    owner: galicaster
+    group: galicaster
+    mode: "0644"
+  tags:
+    - galicaster
+    - galicaster_install
+    - galicaster_plugins
+    - peakaboo
+    - ddp

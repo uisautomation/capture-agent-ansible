@@ -6,13 +6,13 @@ ca_matterhorn_name: "{{ name_mask if name_mask is defined and name_mask else ca_
 matterhorn_host: "{{ GC_staging_matterhorn_host if deploy_environment == 'staging' else GC_matterhorn_host}}"
 matterhorn_user: "{{ GC_staging_matterhorn_user if deploy_environment == 'staging' else GC_matterhorn_user }}"
 matterhorn_password: "{{ GC_staging_matterhorn_password if deploy_environment == 'staging' else GC_matterhorn_password }}"
-GC_version: "{{ 'master' if deploy_environment == 'production' else 'master' }}"
+GC_version: "{{ 'cambridge' if deploy_environment == 'production' else 'cambridge' }}"
 
 ntp_server: 0.uk.pool.ntp.org
 
 nagios_hosts: 127.0.0.1
 
-GC_repo: "https://github.com/teltek/Galicaster.git"
+GC_repo: "https://github.com/uisautomation/Galicaster.git"
 pysca_repo: "https://bitbucket.org/uni-koeln/pysca.git"
 
 GC_send_config: False

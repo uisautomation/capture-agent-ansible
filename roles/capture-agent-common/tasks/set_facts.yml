@@ -36,11 +36,15 @@
   register: connected_webcam_mic
 
 - name: "Get Line In Source"
-  shell: pactl list sources | grep input.pci | grep Name | awk '{ print $2 }'
+  shell: pactl --server=unix:/run/user/$(id -u {{ ca_username }})/pulse/native list sources | grep input.pci | grep Name | awk '{ print $2 }'
   become: true
   become_user: "{{ ca_username }}"
   ignore_errors: yes
   register: line_in_source
+  tags: line_in_source
+
+- debug: msg="{{ line_in_source }}"
+  tags: line_in_source
 
 # Custom PC. Note has multiple card readers so hd4 used
 - name: setting fact Large custom PC CA
@@ -129,18 +133,7 @@
 - name: setting facts for Line In Source
   set_fact:
     GC_line_in_source: "{{ line_in_source.stdout }}"
-  when: line_in_source.stdout != '' and inventory_hostname in groups['capture-agents-v4l2-split']
-
-- name: "If Staging, Set Peakaboo Server"
-  set_fact:
-    peakaboo_meteor: "{{ peakaboo_staging_meteor }}"
-    peakaboo_http: "{{ peakaboo_staging_http }}"
-  when: deploy_environment is defined and deploy_environment == 'staging'
-  tags:
-          - galicaster
-          - galicaster_config
-          - peakaboo
-          - ddp
+  when: line_in_source.stdout != '' and (inventory_hostname in groups['capture-agents-v4l2-split'] or inventory_hostname in groups['capture-agents-dual-v4l2-split'])
 
 - name: setting user interactive facts
   set_fact:

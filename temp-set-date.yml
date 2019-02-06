@@ -1,0 +1,10 @@
+---
+- hosts: capture-agents
+  tasks:
+  - name: get localhost time
+    shell: 'date "+%s"'
+    register: localhost_date_time
+    delegate_to: localhost
+  - name: set correct time
+    shell: 'date -s @{{ localhost_date_time.stdout }}'
+    register: dateout

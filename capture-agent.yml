@@ -88,7 +88,7 @@
     http_proxy: "{{ http_proxy_server }}"
     https_proxy: "{{ https_proxy_server }}"
 
-- hosts: capture-agents-v4l2-split:capture-agents-v4l2-usb
+- hosts: capture-agents-v4l2-split:capture-agents-v4l2-usb:capture-agents-dual-v4l2-split
   remote_user: root
   roles:
       - v4l2-common
