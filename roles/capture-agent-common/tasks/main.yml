@@ -439,6 +439,14 @@
 
 ## TIMER SERVERS
 
+- name: "Stop ntp (using systemd-timesyncd instead)"
+  service:
+    name: ntp
+    state: stopped
+  tags:
+    - ntp
+    - update_ntp
+
 - name: Set timezone to Europe/London
   command: /usr/bin/timedatectl set-timezone "Europe/London"
   tags:
