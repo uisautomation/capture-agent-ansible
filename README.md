@@ -36,15 +36,14 @@ log into the box or run the playbook. To add the deploy key to your local SSH
 agent:
 
 ```bash
-$ cd secrets
-$ alias vault="ansible-vault --vault-password-file=$PWD/open-vault"
+$ alias vault="ansible-vault --vault-password-file=$PWD/secrets/open-vault"
 
 # Decrypt deploy key
-$ vault view lecture-capture-agent-deploy-main > ~/.ssh/lecture-capture-agent-deploy-main
+$ vault view secrets/lecture-capture-agent-deploy-main > ~/.ssh/lecture-capture-agent-deploy-main
 $ chmod 0600 ~/.ssh/lecture-capture-agent-deploy-main
 
 # Copy passphrase to clipboard
-$ vault view lecture-capture-agent-deploy.passphrase | xclip -i -sel clip
+$ vault view secrets/lecture-capture-agent-deploy.passphrase | xclip -i -sel clip
 
 # Add key to ssh-agent
 $ ssh-add ~/.ssh/lecture-capture-agent-deploy-main
