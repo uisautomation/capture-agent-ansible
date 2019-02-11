@@ -50,6 +50,11 @@ $ vault view lecture-capture-agent-deploy.passphrase | xclip -i -sel clip
 $ ssh-add ~/.ssh/lecture-capture-agent-deploy-main
 ```
 
+Lecture Capture agents boxes also have a key which can log in as the
+"galicaster" user without root privileges. The public and private halves of that
+key and the passphrase at stored in the files
+``lecture-capture-galicaster{,.pub,.passphrase}``.
+
 ### Updating hosts file ###
 
 To be able to specify the host when running the ansible playbook it needs adding to the appropriate hosts file for the environment (prod-hosts, test-hosts or dev-hosts).
