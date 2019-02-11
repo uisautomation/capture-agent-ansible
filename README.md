@@ -31,24 +31,23 @@ Starting with a bare machine ..
 ### Agent deployment keys ###
 
 Hosts are configured so that login as root is by means of a deploy key.
-The canonical source for the deploy key is the DevOps secret store.
 You must have the deploy key available to your local SSH agent before you can
 log into the box or run the playbook. To add the deploy key to your local SSH
 agent:
 
 ```bash
-$ cd ~/repos/devops/docs/secrets  # location of secrets store clone
+$ cd secrets
 $ alias vault="ansible-vault --vault-password-file=$PWD/open-vault"
 
 # Decrypt deploy key
-$ vault view lecture-capture-deploy-main > ~/.ssh/lecture-capture-deploy-main
-$ chmod 0600 ~/.ssh/lecture-capture-deploy-main
+$ vault view lecture-capture-agent-deploy-main > ~/.ssh/lecture-capture-agent-deploy-main
+$ chmod 0600 ~/.ssh/lecture-capture-agent-deploy-main
 
 # Copy passphrase to clipboard
-$ vault view lecture-capture-deploy.passphrase | xclip -i -sel clip
+$ vault view lecture-capture-agent-deploy.passphrase | xclip -i -sel clip
 
 # Add key to ssh-agent
-$ ssh-add ~/.ssh/lecture-capture-deploy-main
+$ ssh-add ~/.ssh/lecture-capture-agent-deploy-main
 ```
 
 ### Updating hosts file ###
