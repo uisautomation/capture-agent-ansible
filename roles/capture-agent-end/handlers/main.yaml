@@ -45,22 +45,9 @@
     delay=90
     timeout=800
 
-
-- name: Stop ntp
-  service: >
-    name=ntp
-    state=stopped
-  tags:   ntp
-
 - name: Set local time by ntpdate
   shell: >
     /usr/sbin/ntpdate -s {{ ntp_server }}
-  tags:   ntp
-
-- name: Start ntp
-  service: >
-    name=ntp
-    state=started
   tags:   ntp
 
 - name: reinstall datapath kernel driver
