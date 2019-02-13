@@ -1,0 +1,4 @@
+This role will patch and reboot as required the hosts in any playbook it is included in.
+
+*Use with caution* as it will reboot the host if needed. You will need to apply any logic needed
+to ensure you can cope with the downtime

@@ -43,6 +43,7 @@ $ vault view secrets/lecture-capture-agent-deploy-main > ~/.ssh/lecture-capture-
 $ chmod 0600 ~/.ssh/lecture-capture-agent-deploy-main
 
 # Copy passphrase to clipboard
+
 $ vault view secrets/lecture-capture-agent-deploy.passphrase | xclip -i -sel clip
 
 # Add key to ssh-agent
@@ -132,6 +133,16 @@ The vault password is GPG encrypted with the team's keys and was generated via:
 ```bash
 $ pwgen -1 64 | gpg --encrypt --recipient automation@uis.cam.ac.uk --armor
 ```
+
+## Upgrading capture agents using ansible
+
+The `capture-agent-patch.yml` playbook runs the `upgrade-os` role over the inventory one host at a time using the serial setting. The playbook can be run as any playbook.
+
+```bash
+$ ./run-ansible-playbook.sh capture-agent-patch.yml  -i <inventory file> (-l <host list to limit to>)
+```
+
+This will find and apply any update and autoremove any leftover packeges. It will reboot the host if a reboot is needed.
 
 ## Issue with agents time
 
