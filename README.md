@@ -1,5 +1,7 @@
 # Capture Agent Configuration #
 
+> **This repository has been moved to https://gitlab.developers.cam.ac.uk/uis/devops/lecture-capture/agent-ansible/**
+
 Ansible configuration management for Lecture Capture Captures Agents.
 
 ## The Short Version ##
